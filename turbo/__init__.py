@@ -150,3 +150,9 @@ class TCP015Controller(PfeifferController):
         """
         # TODO: Check this
         return self.read_register(303)
+
+    def rpm_setpoint(self) -> int:
+        """
+        Get the current RPM setpoint
+        """
+        return int(self.read_register(308))

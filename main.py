@@ -5,7 +5,7 @@ from turbo import TCP015Controller
 turbo = TCP015Controller("/dev/ttyUSB0")
 # turbo.off()
 
-print(f"Connected to turbo pump at {turbo.ser}, firmware version {turbo.firmware_version()}")
+print(f"Connected to turbo pump at {turbo.ser}, firmware version {turbo.firmware_version()}, error code {turbo.error_code()}, RPM setpoint {turbo.rpm_setpoint()}")
 
 if not turbo.is_running():
     print("Starting pump station in")
