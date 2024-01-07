@@ -15,7 +15,6 @@ def cksum(data: str) -> str:
     """
     Calculate the checksum for a given string, returning the command with appended checksum
     """
-    data = data.replace(" ", "")
 
     accum = 0
     for c in data:
@@ -81,7 +80,7 @@ class PfeifferController:
         self.send(f"{zero_pad(self.addr, 3)}00{zero_pad(reg, 3)}02=?")
         msg = Message(self.ser.read_until(b'\r').decode().strip('\r'))
         if not msg.ck_valid:
-            raise Exception(f"Invalid checksum while reading register {reg}")
+            raise Exception(f"Invalid checksum in {msg.raw} while reading register {reg}")
         return msg.payload
 
     def write_register(self, reg: int, payload: str):
@@ -122,7 +121,7 @@ class TCP015Controller(PfeifferController):
         """
         Check if the station is running
         """
-        return self.read_register(10) == "0" * 6
+        return self.read_register(10) == "1" * 6
 
     def rpm(self) -> int:
         """
@@ -136,7 +135,7 @@ class TCP015Controller(PfeifferController):
         Get the pump current draw
         """
         # TODO: check format
-        return int(self.read_register(310))
+        return int(self.read_register(310)) / 100
 
     def firmware_version(self) -> str:
         """
