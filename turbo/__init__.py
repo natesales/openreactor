@@ -130,7 +130,7 @@ class TCP015Controller(PfeifferController):
         # TODO: check format
         return int(self.read_register(309))
 
-    def current_draw(self) -> int:
+    def current_draw(self) -> float:
         """
         Get the pump current draw
         """
