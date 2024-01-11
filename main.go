@@ -11,7 +11,26 @@ import (
 
 var (
 	pumpSerialPort = flag.String("pump", "/dev/ttyUSB0", "Pump serial port")
+	verbose = flag.Bool("v", false, "Enable verbose logging")
 )
+
+type Message struct {
+	Addr int
+	Action int
+	Param int
+	DataLen int
+	Payload []byte
+	Ck int
+}
+
+func (m *Message) FromString(s string) {
+	self.addr = int(self.raw[0:3])
+	self.action = int(self.raw[3:5])
+	self.param = int(self.raw[5:8])
+	self.data_len = int(self.raw[8:10])
+	self.payload = self.raw[10:10 + self.data_len]
+	self.ck = int(self.raw[10 + self.data_len:])
+}
 
 // zeroPad prepends zeros to a value until it is of length l
 func zeroPad[T int | string](s T, l int) string {
@@ -76,13 +95,16 @@ func readRegister(port serial.Port, addr, register int) (string, error) {
 
 func main() {
 	flag.Parse()
+	if *verbose {
+		log.SetLevel(log.DebugLevel)
+	}
 
 	mode := &serial.Mode{
 		BaudRate: 9600,
 		Parity:   serial.NoParity,
 		StopBits: serial.OneStopBit,
 	}
-	log.Debugf("Connecting to turbo pump on %s", *pumpSerialPort)
+	log.Infof("Connecting to turbo pump on %s", *pumpSerialPort)
 	port, err := serial.Open(*pumpSerialPort, mode)
 	if err != nil {
 		log.Fatal(err)
