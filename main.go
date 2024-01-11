@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"strconv"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -11,25 +12,41 @@ import (
 
 var (
 	pumpSerialPort = flag.String("pump", "/dev/ttyUSB0", "Pump serial port")
-	verbose = flag.Bool("v", false, "Enable verbose logging")
+	verbose        = flag.Bool("v", false, "Enable verbose logging")
 )
 
 type Message struct {
-	Addr int
-	Action int
-	Param int
+	Addr    int
+	Action  int
+	Param   int
 	DataLen int
-	Payload []byte
-	Ck int
+	Payload string
+	Ck      int
 }
 
-func (m *Message) FromString(s string) {
-	self.addr = int(self.raw[0:3])
-	self.action = int(self.raw[3:5])
-	self.param = int(self.raw[5:8])
-	self.data_len = int(self.raw[8:10])
-	self.payload = self.raw[10:10 + self.data_len]
-	self.ck = int(self.raw[10 + self.data_len:])
+func toInt(s string) int {
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		log.Fatalf("Could not convert %s to int", s)
+	}
+	return i
+}
+
+// FromString parses a string as a messages, returning an error if the checksum is incorrect
+func (m *Message) FromString(s string) error {
+	m.Addr = toInt(s[0:3])
+	m.Action = toInt(s[3:5])
+	m.Param = toInt(s[5:8])
+	m.DataLen = toInt(s[8:10])
+	m.Payload = s[10 : 10+m.DataLen]
+	m.Ck = toInt(s[10+m.DataLen:])
+
+	providedCk := zeroPad(m.Ck, 3)
+	dataCk := cksum(s[:len(s)-3])
+	if providedCk != dataCk {
+		return fmt.Errorf("checksum mismatch: %s != %s", providedCk, dataCk)
+	}
+	return nil
 }
 
 // zeroPad prepends zeros to a value until it is of length l
@@ -52,47 +69,6 @@ func cksum(s string) string {
 	return zeroPad(accum%256, 3)
 }
 
-func sendMessage(port serial.Port, message string) error {
-	// Send message
-	log.Debugf("Sending message")
-	_, err := port.Write([]byte(message + cksum(message) + "\r"))
-	return err
-}
-
-func readRegister(port serial.Port, addr, register int) (string, error) {
-	// Send query message
-	if err := sendMessage(
-		port,
-		fmt.Sprintf("%s00%s02=?",
-			zeroPad(addr, 3),
-			zeroPad(register, 3),
-		),
-	); err != nil {
-		return "", err
-	}
-
-	// Read response
-	buf := make([]byte, 0)
-	for {
-		b := make([]byte, 1)
-		_, err := port.Read(b)
-		if err != nil {
-			return "", err
-		}
-
-		if b[0] == '\r' {
-			break
-		}
-
-		buf = append(buf, b[0])
-	}
-
-	out := string(buf)
-	// TODO: Clean out and check checksum
-
-	return out, nil
-}
-
 func main() {
 	flag.Parse()
 	if *verbose {
@@ -111,13 +87,19 @@ func main() {
 	}
 	defer port.Close()
 
+	turbo := TurboController{
+		Port: port,
+		Addr: 1,
+	}
+	tcp015 := TCP015Controller{turbo}
+
 	for {
-		reg, err := readRegister(port, 1, 309)
+		reg, err := turbo.ReadRegister(309)
 		if err != nil {
 			log.Warn(err)
 			continue
 		}
-		log.Infof("Register 309: %s", reg)
+		log.Infof("%+v", reg)
 		time.Sleep(1 * time.Second)
 	}
 }
