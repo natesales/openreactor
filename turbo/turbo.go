@@ -1,4 +1,4 @@
-package main
+package turbo
 
 import (
 	"fmt"
@@ -7,18 +7,18 @@ import (
 	"go.bug.st/serial"
 )
 
-type TurboController struct {
+type Controller struct {
 	Port serial.Port
 	Addr int
 }
 
-func (t *TurboController) sendMessage(message string) error {
+func (t *Controller) sendMessage(message string) error {
 	_, err := t.Port.Write([]byte(message + cksum(message) + "\r"))
 	return err
 }
 
 // WriteRegister writes a string payload to a register
-func (t *TurboController) WriteRegister(register int, payload string) error {
+func (t *Controller) WriteRegister(register int, payload string) error {
 	command := zeroPad(t.Addr, 3)
 	command += "10"
 	command += zeroPad(register, 3)
@@ -28,7 +28,7 @@ func (t *TurboController) WriteRegister(register int, payload string) error {
 }
 
 // SetRegister sets a boolean register state
-func (t *TurboController) SetRegister(register int, state bool) error {
+func (t *Controller) SetRegister(register int, state bool) error {
 	var payload string
 	if state {
 		payload = "1"
@@ -39,7 +39,7 @@ func (t *TurboController) SetRegister(register int, state bool) error {
 }
 
 // ReadRegister reads a value at a register and returns a corresponding Message
-func (t *TurboController) ReadRegister(register int) (*Message, error) {
+func (t *Controller) ReadRegister(register int) (*Message, error) {
 	// Send query message
 	if err := t.sendMessage(
 		fmt.Sprintf("%s00%s02=?",

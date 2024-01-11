@@ -1,7 +1,9 @@
-package main
+package turbo
+
+import "strconv"
 
 type TCP015Controller struct {
-	Controller TurboController
+	Controller Controller
 }
 
 // Off turns the pump off
@@ -39,12 +41,18 @@ func (t *TCP015Controller) Hz() (int, error) {
 }
 
 // CurrentDraw returns the current motor current draw
-func (t *TCP015Controller) CurrentDraw() (int, error) {
+func (t *TCP015Controller) CurrentDraw() (float64, error) {
 	message, err := t.Controller.ReadRegister(310)
 	if err != nil {
 		return 0, err
 	}
-	return toInt(message.Payload) / 100, nil
+
+	f, err := strconv.ParseFloat(message.Payload, 32)
+	if err != nil {
+		return 0, err
+	}
+
+	return f / 100, nil
 }
 
 // FirmwareVersion returns the firmware version
