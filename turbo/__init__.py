@@ -13,7 +13,7 @@ def zero_pad(s, count: int) -> str:
 
 def cksum(data: str) -> str:
     """
-    Calculate the checksum for a given string, returning the command with appended checksum
+    Calculate the checksum for a given string
     """
 
     accum = 0
@@ -123,9 +123,9 @@ class TCP015Controller(PfeifferController):
         """
         return self.read_register(10) == "1" * 6
 
-    def rpm(self) -> int:
+    def hz(self) -> int:
         """
-        Get the current pump RPM
+        Get the current pump rotation in Hz
         """
         # TODO: check format
         return int(self.read_register(309))
