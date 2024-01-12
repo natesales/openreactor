@@ -62,10 +62,15 @@ func (c *Controller) ReadRegister(register int) (*Message, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
 	defer cancel()
 
-	go c.read(ch)
+	c.lock.Lock()
+	defer c.lock.Unlock()
+	go read(c.Port, ch)
 
 	select {
 	case <-ctx.Done():
+		if err := c.Port.ResetInputBuffer(); err != nil {
+			log.Warnf("Error resetting output buffer: %v", err)
+		}
 		return nil, ctx.Err()
 	case result := <-ch:
 		var m Message
@@ -76,15 +81,13 @@ func (c *Controller) ReadRegister(register int) (*Message, error) {
 	}
 }
 
-func (c *Controller) read(ch chan string) {
-	log.Debug("Locking to read response")
-	c.lock.Lock()
+func read(port serial.Port, ch chan string) {
 	buf := make([]byte, 0)
 	log.Debug("Reading response...")
 
 	for {
 		b := make([]byte, 1)
-		_, err := c.Port.Read(b)
+		_, err := port.Read(b)
 		if err != nil {
 			log.Warnf("Error reading from serial port: %v", err)
 			ch <- ""
@@ -97,6 +100,5 @@ func (c *Controller) read(ch chan string) {
 		buf = append(buf, b[0])
 	}
 
-	c.lock.Unlock()
 	ch <- string(buf)
 }
