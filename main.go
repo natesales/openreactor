@@ -58,6 +58,7 @@ func main() {
 	log.Infof("Starting API on %s", *apiListen)
 	go http.ListenAndServe(*apiListen, nil)
 
+	log.Infof("Starting metrics reporter every %s", *pushInterval)
 	ticker := time.NewTicker(*pushInterval)
 	for ; true; <-ticker.C {
 		hz, err := tp.Hz()
@@ -65,7 +66,6 @@ func main() {
 			log.Warn(err)
 			continue
 		}
-		rpm := hz * 60
 
 		current, err := tp.CurrentDraw()
 		if err != nil {
@@ -97,7 +97,5 @@ func main() {
 			log.Warn(err)
 			continue
 		}
-
-		log.Infof("%dHz (%dRPM) @ %.2fA running? %v", hz, rpm, current, isRunning)
 	}
 }
