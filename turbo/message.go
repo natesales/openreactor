@@ -2,8 +2,9 @@ package turbo
 
 import (
 	"fmt"
-	"log"
 	"strconv"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type Message struct {

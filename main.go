@@ -5,10 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	log "github.com/sirupsen/logrus"
-	"go.bug.st/serial"
-
 	"github.com/natesales/openreactor/turbo"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -36,23 +34,13 @@ func main() {
 		log.SetLevel(log.TraceLevel)
 	}
 
-	mode := &serial.Mode{
-		BaudRate: 9600,
-		Parity:   serial.NoParity,
-		StopBits: serial.OneStopBit,
+	tp := turbo.Controller{
+		Port: *pumpSerialPort,
+		Addr: 1,
 	}
-	log.Infof("Connecting to turbo pump on %s", *pumpSerialPort)
-	port, err := serial.Open(*pumpSerialPort, mode)
-	if err != nil {
+	log.Infof("Connecting to turbo pump on %s", tp.Port)
+	if err := tp.Connect(); err != nil {
 		log.Fatal(err)
-	}
-	defer port.Close()
-
-	tp := turbo.TCP015Controller{
-		Controller: turbo.Controller{
-			Port: port,
-			Addr: 1,
-		},
 	}
 
 	fw, err := tp.FirmwareVersion()

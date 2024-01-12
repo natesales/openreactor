@@ -12,15 +12,41 @@ import (
 )
 
 type Controller struct {
-	Port serial.Port
+	Port string
 	Addr int
 
+	p    serial.Port
 	lock sync.Mutex
+}
+
+// Connect connects to the serial port
+func (c *Controller) Connect() error {
+	mode := &serial.Mode{
+		BaudRate: 9600,
+		Parity:   serial.NoParity,
+		StopBits: serial.OneStopBit,
+	}
+	var err error
+	c.p, err = serial.Open(c.Port, mode)
+	return err
+}
+
+// Close closes the serial port
+func (c *Controller) Close() error {
+	return c.p.Close()
+}
+
+// Reconnect closes and reopens the serial port
+func (c *Controller) Reconnect() error {
+	if err := c.Close(); err != nil {
+		return err
+	}
+	return c.Connect()
 }
 
 func (c *Controller) sendMessage(message string) error {
 	c.lock.Lock()
-	_, err := c.Port.Write([]byte(message + cksum(message) + "\r"))
+	_, err := c.p.Write([]byte(message + cksum(message) + "\r"))
 	c.lock.Unlock()
 	return err
 }
@@ -59,17 +85,17 @@ func (c *Controller) ReadRegister(register int) (*Message, error) {
 	}
 
 	ch := make(chan string, 1)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+	ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
 	defer cancel()
 
 	c.lock.Lock()
 	defer c.lock.Unlock()
-	go read(c.Port, ch)
+	go read(c.p, ch)
 
 	select {
 	case <-ctx.Done():
-		if err := c.Port.ResetInputBuffer(); err != nil {
-			log.Warnf("Error resetting output buffer: %v", err)
+		if err := c.Reconnect(); err != nil {
+			return nil, fmt.Errorf("could not reconnect: %v", err)
 		}
 		return nil, ctx.Err()
 	case result := <-ch:
@@ -83,7 +109,6 @@ func (c *Controller) ReadRegister(register int) (*Message, error) {
 
 func read(port serial.Port, ch chan string) {
 	buf := make([]byte, 0)
-	log.Debug("Reading response...")
 
 	for {
 		b := make([]byte, 1)

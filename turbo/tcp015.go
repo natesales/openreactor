@@ -6,29 +6,25 @@ import (
 	"strings"
 )
 
-type TCP015Controller struct {
-	Controller Controller
-}
-
 // Off turns the pump off
-func (t *TCP015Controller) Off() error {
-	return t.Controller.SetRegister(10, true)
+func (c *Controller) Off() error {
+	return c.SetRegister(10, true)
 }
 
 // On turns the pump on
-func (t *TCP015Controller) On() error {
-	return t.Controller.SetRegister(10, false)
+func (c *Controller) On() error {
+	return c.SetRegister(10, false)
 }
 
 // Standby puts the pump in standby mode
-func (t *TCP015Controller) Standby() error {
+func (c *Controller) Standby() error {
 	// TODO
 	panic("not implemented")
 }
 
 // IsRunning returns true if the pump is running
-func (t *TCP015Controller) IsRunning() (bool, error) {
-	message, err := t.Controller.ReadRegister(10)
+func (c *Controller) IsRunning() (bool, error) {
+	message, err := c.ReadRegister(10)
 	if err != nil {
 		return false, err
 	}
@@ -36,8 +32,8 @@ func (t *TCP015Controller) IsRunning() (bool, error) {
 }
 
 // Hz returns the current motor speed
-func (t *TCP015Controller) Hz() (int, error) {
-	message, err := t.Controller.ReadRegister(309)
+func (c *Controller) Hz() (int, error) {
+	message, err := c.ReadRegister(309)
 	if err != nil {
 		return 0, err
 	}
@@ -49,8 +45,8 @@ func (t *TCP015Controller) Hz() (int, error) {
 }
 
 // CurrentDraw returns the current motor current draw
-func (t *TCP015Controller) CurrentDraw() (float64, error) {
-	message, err := t.Controller.ReadRegister(310)
+func (c *Controller) CurrentDraw() (float64, error) {
+	message, err := c.ReadRegister(310)
 	if err != nil {
 		return 0, err
 	}
@@ -64,8 +60,8 @@ func (t *TCP015Controller) CurrentDraw() (float64, error) {
 }
 
 // FirmwareVersion returns the firmware version
-func (t *TCP015Controller) FirmwareVersion() (string, error) {
-	message, err := t.Controller.ReadRegister(312)
+func (c *Controller) FirmwareVersion() (string, error) {
+	message, err := c.ReadRegister(312)
 	if err != nil {
 		return "", err
 	}
@@ -73,8 +69,8 @@ func (t *TCP015Controller) FirmwareVersion() (string, error) {
 }
 
 // ErrorCode returns the current error code
-func (t *TCP015Controller) ErrorCode() (string, error) {
-	message, err := t.Controller.ReadRegister(303)
+func (c *Controller) ErrorCode() (string, error) {
+	message, err := c.ReadRegister(303)
 	if err != nil {
 		return "", err
 	}
