@@ -7,11 +7,14 @@ import (
 
 	"github.com/natesales/openreactor/turbo"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/natesales/openreactor/db"
 )
 
 var (
 	pumpSerialPort = flag.String("pump", "/dev/ttyUSB0", "Pump serial port")
 	apiListen      = flag.String("l", ":8088", "API listen address")
+	pushInterval   = flag.Duration("i", 1*time.Second, "Metrics push interval")
 	verbose        = flag.Bool("v", false, "Enable verbose logging")
 	trace          = flag.Bool("trace", false, "Enable trace logging")
 )
@@ -55,7 +58,8 @@ func main() {
 	log.Infof("Starting API on %s", *apiListen)
 	go http.ListenAndServe(*apiListen, nil)
 
-	for {
+	ticker := time.NewTicker(*pushInterval)
+	for ; true; <-ticker.C {
 		hz, err := tp.Hz()
 		if err != nil {
 			log.Warn(err)
@@ -69,8 +73,31 @@ func main() {
 			continue
 		}
 
-		log.Infof("%dHz (%dRPM) @ %.2fA", hz, rpm, current)
+		isRunning, err := tp.IsRunning()
+		if err != nil {
+			log.Warn(err)
+			continue
+		}
 
-		time.Sleep(1 * time.Second)
+		// Write to database
+		if err := db.Write("turbo_hz", nil, map[string]any{"hz": hz}); err != nil {
+			log.Warn(err)
+			continue
+		}
+		if err := db.Write("turbo_current", nil, map[string]any{"current": current}); err != nil {
+			log.Warn(err)
+			continue
+		}
+
+		isRunningInt := 0
+		if isRunning {
+			isRunningInt = 1
+		}
+		if err := db.Write("turbo_running", nil, map[string]any{"running": isRunningInt}); err != nil {
+			log.Warn(err)
+			continue
+		}
+
+		log.Infof("%dHz (%dRPM) @ %.2fA running? %v", hz, rpm, current, isRunning)
 	}
 }
