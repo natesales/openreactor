@@ -3,17 +3,27 @@ package turbo
 import (
 	"fmt"
 	"strings"
+	"sync"
 
+	log "github.com/sirupsen/logrus"
 	"go.bug.st/serial"
 )
 
 type Controller struct {
 	Port serial.Port
 	Addr int
+
+	lock sync.Mutex
 }
 
 func (t *Controller) sendMessage(message string) error {
+	log.Debug("Locking to write message")
+	t.lock.Lock()
+	log.Debug("Writing message")
 	_, err := t.Port.Write([]byte(message + cksum(message) + "\r"))
+	log.Debug("Wrote message, unlocking")
+	t.lock.Unlock()
+	log.Debug("Unlocked")
 	return err
 }
 
@@ -51,7 +61,13 @@ func (t *Controller) ReadRegister(register int) (*Message, error) {
 	}
 
 	// Read response
+	log.Debug("Locking to read response")
+	t.lock.Lock()
 	buf := make([]byte, 0)
+	log.Debug("Reading response...")
+
+	// TODO: Timeout this read:
+
 	for {
 		b := make([]byte, 1)
 		_, err := t.Port.Read(b)
@@ -65,6 +81,9 @@ func (t *Controller) ReadRegister(register int) (*Message, error) {
 
 		buf = append(buf, b[0])
 	}
+
+	log.Debug("Read finished, unlocking")
+	t.lock.Unlock()
 
 	// Parse as message
 	var m Message

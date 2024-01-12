@@ -1,6 +1,10 @@
 package turbo
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 type TCP015Controller struct {
 	Controller Controller
@@ -37,7 +41,11 @@ func (t *TCP015Controller) Hz() (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	return toInt(message.Payload), nil
+	hz := toInt(message.Payload)
+	if hz == 111111 {
+		return 0, fmt.Errorf("invalid motor speed")
+	}
+	return hz, nil
 }
 
 // CurrentDraw returns the current motor current draw
@@ -61,7 +69,7 @@ func (t *TCP015Controller) FirmwareVersion() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return message.Payload, nil
+	return strings.ReplaceAll(message.Payload, "  ", " "), nil
 }
 
 // ErrorCode returns the current error code
