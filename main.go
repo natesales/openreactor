@@ -13,8 +13,9 @@ import (
 
 var (
 	pumpSerialPort = flag.String("pump", "/dev/ttyUSB0", "Pump serial port")
-	verbose        = flag.Bool("v", false, "Enable verbose logging")
 	apiListen      = flag.String("l", ":8088", "API listen address")
+	verbose        = flag.Bool("v", false, "Enable verbose logging")
+	trace          = flag.Bool("trace", false, "Enable trace logging")
 )
 
 func exec(f func() error) func(w http.ResponseWriter, r *http.Request) {
@@ -30,6 +31,9 @@ func main() {
 	flag.Parse()
 	if *verbose {
 		log.SetLevel(log.DebugLevel)
+	}
+	if *trace {
+		log.SetLevel(log.TraceLevel)
 	}
 
 	mode := &serial.Mode{
