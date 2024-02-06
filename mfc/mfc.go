@@ -2,6 +2,7 @@ package mfc
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -57,6 +58,9 @@ func (c *Controller) sendMessage(message string) (string, error) {
 			'\r',
 		),
 	)
+	if c.p.ResetInputBuffer(); err != nil {
+		return "", err
+	}
 	c.lock.Unlock()
 
 	buf := make([]byte, 0)
@@ -77,12 +81,11 @@ func (c *Controller) sendMessage(message string) (string, error) {
 	}
 
 	out := string(buf)
-	log.Debugf("MFC response: %s", out)
+	response := out[:len(out)-2]
+	crc := out[len(out)-2:]
 
-	response := out[:len(out)-3]
-	crc := out[len(out)-3 : len(out)-1]
 	if string(cksum(response)) != crc {
-		return "", fmt.Errorf("checksum mismatch: %s != %s", cksum(response), crc)
+		return "", fmt.Errorf("checksum mismatch: %x != %x", cksum(response), crc)
 	}
 
 	return response, err
@@ -94,5 +97,22 @@ func (c *Controller) Version() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return strings.TrimPrefix(resp, "?Vern"), nil
+	return strings.TrimPrefix(resp, "Vern"), nil
+}
+
+// SetFlowRate sets the flow rate
+func (c *Controller) SetFlowRate(f float64) error {
+	resp, err := c.sendMessage(fmt.Sprintf("Sinv%.3f", f))
+	if err != nil {
+		return err
+	}
+	fSet, err := strconv.ParseFloat(strings.TrimPrefix(resp, "Sinv"), 64)
+	if err != nil {
+		return err
+	}
+
+	if fSet != f {
+		return fmt.Errorf("unexpected return setpoint %f, expected %f", fSet, f)
+	}
+	return nil
 }
