@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -144,7 +145,10 @@ func main() {
 			log.Warn(err)
 			continue
 		}
-		if err := db.Write("vacuum", nil, map[string]any{"high": highVac}); err != nil {
+		hv := fmt.Sprintf("%.2e", highVac)
+		log.Infof("High vac: %s", hv)
+
+		if err := db.Write("vacuum", nil, map[string]any{"high": hv}); err != nil {
 			log.Warn(err)
 			continue
 		}

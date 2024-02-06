@@ -7,7 +7,51 @@ import (
 	"sync"
 
 	"go.bug.st/serial"
+
+	"github.com/natesales/openreactor/util"
 )
+
+var EdwardsAimS = []util.Point{
+	{2.00, 7.5e-9},
+	{2.50, 1.8e-8},
+	{3.00, 4.4e-8},
+	{3.20, 6.1e-8},
+	{3.40, 8.3e-8},
+	{3.60, 1.1e-7},
+	{3.80, 1.6e-7},
+	{4.00, 2.2e-7},
+	{4.20, 3.0e-7},
+	{4.40, 4.1e-7},
+	{4.60, 5.5e-7},
+	{4.80, 7.4e-7},
+	{5.00, 9.8e-7},
+	{5.20, 1.3e-6},
+	{5.40, 1.7e-6},
+	{5.60, 2.1e-6},
+	{5.80, 2.7e-6},
+	{6.00, 3.4e-6},
+	{6.20, 4.2e-6},
+	{6.40, 5.2e-6},
+	{6.60, 6.3e-6},
+	{6.80, 7.5e-6},
+	{7.00, 9.0e-6},
+	{7.20, 1.1e-5},
+	{7.40, 1.3e-5},
+	{7.60, 1.5e-5},
+	{7.80, 1.8e-5},
+	{8.00, 2.2e-5},
+	{8.20, 2.6e-5},
+	{8.40, 3.2e-5},
+	{8.60, 4.3e-5},
+	{8.80, 5.9e-5},
+	{9.00, 9.0e-5},
+	{9.20, 1.4e-4},
+	{9.40, 2.5e-4},
+	{9.60, 5.0e-4},
+	{9.80, 1.3e-3},
+	{9.90, 2.7e-3},
+	{10.0, 7.5e-3},
+}
 
 type Controller struct {
 	Port string
@@ -59,5 +103,9 @@ func (c *Controller) HighVac() (float64, error) {
 		buf = append(buf, b[0])
 	}
 
-	return strconv.ParseFloat(strings.TrimSpace(string(buf)), 64)
+	f, err := strconv.ParseFloat(strings.TrimSpace(string(buf)), 64)
+	if err != nil {
+		return -1, fmt.Errorf("parsing float: %v", err)
+	}
+	return util.Interpolate(f, EdwardsAimS), nil
 }
