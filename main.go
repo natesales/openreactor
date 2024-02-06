@@ -5,14 +5,16 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/natesales/openreactor/turbo"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/natesales/openreactor/db"
+	"github.com/natesales/openreactor/mfc"
+	"github.com/natesales/openreactor/turbo"
 )
 
 var (
-	pumpSerialPort = flag.String("pump", "/dev/ttyUSB0", "Pump serial port")
+	pumpSerialPort = flag.String("pump", "/dev/ttyS0", "Pump serial port")
+	mfcSerialPort = flag.String("mfc", "/dev/ttyS1", "Mass flow controller serial port")
 	apiListen      = flag.String("l", ":8088", "API listen address")
 	pushInterval   = flag.Duration("i", 1*time.Second, "Metrics push interval")
 	verbose        = flag.Bool("v", false, "Enable verbose logging")
@@ -28,15 +30,7 @@ func exec(f func() error) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func main() {
-	flag.Parse()
-	if *verbose {
-		log.SetLevel(log.DebugLevel)
-	}
-	if *trace {
-		log.SetLevel(log.TraceLevel)
-	}
-
+func turboConnect() turbo.Controller {
 	tp := turbo.Controller{
 		Port: *pumpSerialPort,
 		Addr: 1,
@@ -52,8 +46,35 @@ func main() {
 	}
 	log.Infof("Turbo pump %s", fw)
 
+	return tp
+}
+
+func mfcConnect() mfc.Controller {
+	mf := mfc.Controller{
+		Port: *mfcSerialPort,
+	}
+	log.Infof("Connecting to MFC on %s", mf.Port)
+	if err := mf.Connect(); err != nil {
+		log.Fatal(err)
+	}
+
+	return mf
+}
+
+func main() {
+	flag.Parse()
+	if *verbose {
+		log.SetLevel(log.DebugLevel)
+	}
+	if *trace {
+		log.SetLevel(log.TraceLevel)
+	}
+
+	tp := turboConnect()
 	http.HandleFunc("/turbo/on", exec(tp.On))
 	http.HandleFunc("/turbo/off", exec(tp.Off))
+
+	mf := mfcConnect()
 
 	log.Infof("Starting API on %s", *apiListen)
 	go http.ListenAndServe(*apiListen, nil)
