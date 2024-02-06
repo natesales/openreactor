@@ -26,6 +26,10 @@ func toInt(s string) int {
 
 // FromString parses a string as a messages, returning an error if the checksum is incorrect
 func (m *Message) FromString(s string) error {
+	if len(s) < 10 {
+		return fmt.Errorf("invalid message: %s", s)
+	}
+
 	m.Addr = toInt(s[0:3])
 	m.Action = toInt(s[3:5])
 	m.Param = toInt(s[5:8])

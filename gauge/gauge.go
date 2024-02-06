@@ -1,13 +1,14 @@
 package gauge
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 	"sync"
 
+	log "github.com/sirupsen/logrus"
 	"go.bug.st/serial"
 
+	"github.com/natesales/openreactor/db"
 	"github.com/natesales/openreactor/util"
 )
 
@@ -86,26 +87,36 @@ func (c *Controller) Reconnect() error {
 }
 
 // HighVac gets the high vacuum level
-func (c *Controller) HighVac() (float64, error) {
+func (c *Controller) Stream() {
 	buf := make([]byte, 0)
 
 	for {
 		b := make([]byte, 1)
 		_, err := c.p.Read(b)
 		if err != nil {
-			return -1, fmt.Errorf("reading from gauge serial port: %v", err)
+			log.Warnf("reading from gauge serial port: %v", err)
+			continue
 		}
 
 		if b[0] == ';' {
-			break
+			line := strings.TrimSpace(string(buf))
+			voltage, err := strconv.ParseFloat(line, 64)
+			if err != nil {
+				log.Warnf("parsing float: %v", err)
+			}
+			torr := util.Interpolate(voltage, EdwardsAimS)
+
+			log.Debugf("%.2fV %.2e torr", voltage, torr)
+
+			if err := db.Write("vacuum_torr", nil, map[string]any{"high": torr}); err != nil {
+				log.Warn(err)
+			}
+			if err := db.Write("vacuum_volt", nil, map[string]any{"high": voltage}); err != nil {
+				log.Warn(err)
+			}
+			buf = make([]byte, 0)
+		} else {
+			buf = append(buf, b[0])
 		}
-
-		buf = append(buf, b[0])
 	}
-
-	f, err := strconv.ParseFloat(strings.TrimSpace(string(buf)), 64)
-	if err != nil {
-		return -1, fmt.Errorf("parsing float: %v", err)
-	}
-	return util.Interpolate(f, EdwardsAimS), nil
 }

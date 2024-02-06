@@ -3,6 +3,19 @@ import binascii
 import serial
 
 
+gases = {
+    1: "Air",
+    2: "Argon",
+    3: "CO2",
+    4: "CO",
+    5: "He",
+    6: "H",
+    7: "CH4",
+    8: "N",
+    9: "NO",
+    10: "O",
+}
+
 def calc_crc(cmd: str):
     # cmd is a byte array containing the command ASCII string.
     # Example: cmnd="Sinv2.000"
@@ -65,13 +78,9 @@ class MFC:
             stopbits=serial.STOPBITS_ONE,
             timeout=3,
         )
-        print("Starting MFC Controller")
-        print("Connected over serial at " + str(self.ser.name))
-        self.turn_on()
 
-    def is_healthy(self):
-        # TODO: this serial code will be specific to your MFC
-        return 'Srnm210704\x8c\x92\r' in self.cmd_controller("?Srnm")
+    def is_connected(self):
+        return self.cmd_controller("?Srnm").startswith("Srnm")
 
     def read_streaming_state(self):
         self.cmd_controller('?Strm')
@@ -80,57 +89,47 @@ class MFC:
         self.cmd_controller('!Strm' + mode)
 
     def read_gas(self):
-        self.cmd_controller('?Gasi')
+        resp = self.cmd_controller('?Gasi')
+        gas_id = int(resp[-1])
+        if gas_id not in gases:
+            return f"unknown ({gas_id})"
+        return gases[gas_id]
 
     def set_gas(self, gas_index):
-        gases = {
-            1: "Air",
-            2: "Argon",
-            3: "CO2",
-            4: "CO",
-            5: "He",
-            6: "H",
-            7: "CH4",
-            8: "N",
-            9: "NO",
-            10: "O",
-        }
         if gas_index not in gases:
             raise ValueError("Invalid gas index")
         rsp = "Gasi" + str(gas_index)
         rsp = rsp + calc_crc(rsp) + '\x0d'
         return self.cmd_controller("!Gasi" + str(gas_index)) == rsp
 
+    def get_setpoint(self):
+        return float(self.cmd_controller("?Sinv").removeprefix("Sinv"))
+
     def set_setpoint(self, setpoint):
         rsp = "Sinv" + ('%.3f' % setpoint)
-        rsp = rsp + calc_crc(rsp) + '\x0d'
+        rsp = rsp.encode() + calc_crc(rsp) + '\x0d'.encode()
         return self.cmd_controller("!Sinv" + ('%.3f' % setpoint)) == rsp
 
     def read_flow(self):
-        self.cmd_controller("?Flow")
+        return float(self.cmd_controller("?Flow").removeprefix("Flow"))
 
     def cmd_controller(self, cmd):
-        crc = calc_crc(cmd)
-        cmd = cmd + crc + '\x0d'
-        print(cmd)
-        self.ser.write(cmd)
-        ser_rsp = self.ser.read(200)
-        print("Output from MFC Controller cmd with repr(): " + repr(ser_rsp))
-        print("Output from MFC Controller cmd *without* repr(): " + ser_rsp)
-        return ser_rsp
-
-    def turn_on(self):
-        # optional depending on what initial state you want to assert
-        # having this on 'On' can cause some chattiness on the serial port
-        # self.set_streaming_state("Echo")
-        pass
-
+        print(f"Sending command: {cmd}")
+        self.ser.write(cmd.encode() + calc_crc(cmd) + '\x0d'.encode())
+        ser_rsp = self.ser.read_until(b'\r')
+        response = ser_rsp[:-3].decode()
+        crc = ser_rsp[-3:-1]
+        if crc != calc_crc(response):
+            print("CRC error")
+        print(response)
+        return response
 
 mfc = MFC("/dev/ttyS1")
-if mfc.is_healthy():
-    print("We're healthy!!!")
+if mfc.is_connected():
+    print("Connected to MFC")
 # run various commands to test MFC
 # mc_1.set_gas(8)
-# mc_1.read_gas()
-# mc_1.set_setpoint(150)
-mfc.read_flow()
+
+print(f"{mfc.read_flow()} of {mfc.read_gas()} setpoint {mfc.get_setpoint()}")
+
+# mfc.set_setpoint(1.337)
