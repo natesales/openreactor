@@ -86,7 +86,7 @@ func (c *Controller) Reconnect() error {
 	return c.Connect()
 }
 
-// HighVac gets the high vacuum level
+// Stream streams gauge data into the database
 func (c *Controller) Stream() {
 	buf := make([]byte, 0)
 

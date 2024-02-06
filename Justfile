@@ -10,3 +10,8 @@ gauged:
     rm -f gauged
     go build -o gauged cmd/gauge/main.go
     sudo ./gauged -v
+
+mfcd:
+    rm -f mfcd
+    go build -o mfcd cmd/mfc/main.go
+    sudo ./mfcd -v
