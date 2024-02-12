@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"net/http"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -15,15 +14,6 @@ var (
 	verbose       = flag.Bool("v", false, "Enable verbose logging")
 	trace         = flag.Bool("trace", false, "Enable trace logging")
 )
-
-func exec(f func() error) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if err := f(); err != nil {
-			w.Write([]byte("Error: " + err.Error()))
-		}
-		w.Write([]byte("ok"))
-	}
-}
 
 func main() {
 	flag.Parse()
