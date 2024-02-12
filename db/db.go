@@ -4,12 +4,12 @@ import (
 	"context"
 	"time"
 
-	influxdb "github.com/influxdata/influxdb-client-go/v2"
+	"github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api/write"
 )
 
 var (
-	client = influxdb.NewClient(
+	client = influxdb2.NewClient(
 		"https://influxdb-reactor.westland.as34553.net",
 		"mLTGAlKl0WfX02H6C-adeG_ZeqSvzxf9LoFp3Guhj1EwgNt1mmf5UHw_dFXxWdjk90Y9a3eVYOm02aTWbD-kfg==",
 	)
