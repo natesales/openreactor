@@ -2,7 +2,6 @@ import binascii
 
 import serial
 
-
 gases = {
     1: "Air",
     2: "Argon",
@@ -15,6 +14,7 @@ gases = {
     9: "NO",
     10: "O",
 }
+
 
 def calc_crc(cmd: str):
     # cmd is a byte array containing the command ASCII string.
@@ -123,6 +123,7 @@ class MFC:
             print("CRC error")
         print(response)
         return response
+
 
 mfc = MFC("/dev/ttyS1")
 if mfc.is_connected():

@@ -1,4 +1,4 @@
-package mfc
+package main
 
 import (
 	"fmt"

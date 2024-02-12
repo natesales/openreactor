@@ -1,4 +1,4 @@
-package gauge
+package main
 
 import (
 	"strconv"
@@ -8,7 +8,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"go.bug.st/serial"
 
-	"github.com/natesales/openreactor/db"
 	"github.com/natesales/openreactor/util"
 )
 
@@ -56,6 +55,7 @@ var EdwardsAimS = []util.Point{
 
 type Controller struct {
 	Port string
+	LUT  []util.Point
 
 	p    serial.Port
 	lock sync.Mutex
@@ -87,7 +87,7 @@ func (c *Controller) Reconnect() error {
 }
 
 // Stream streams gauge data into the database
-func (c *Controller) Stream() {
+func (c *Controller) Stream(report func(voltage, torr float64)) {
 	buf := make([]byte, 0)
 
 	for {
@@ -104,16 +104,11 @@ func (c *Controller) Stream() {
 			if err != nil {
 				log.Warnf("parsing float: %v", err)
 			}
-			torr := util.Interpolate(voltage, EdwardsAimS)
+			torr := util.Interpolate(voltage, c.LUT)
 
 			log.Debugf("%.2fV %.2e torr", voltage, torr)
+			report(voltage, torr)
 
-			if err := db.Write("vacuum_torr", nil, map[string]any{"high": torr}); err != nil {
-				log.Warn(err)
-			}
-			if err := db.Write("vacuum_volt", nil, map[string]any{"high": voltage}); err != nil {
-				log.Warn(err)
-			}
 			buf = make([]byte, 0)
 		} else {
 			buf = append(buf, b[0])

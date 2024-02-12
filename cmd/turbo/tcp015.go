@@ -1,4 +1,4 @@
-package turbo
+package main
 
 import (
 	"fmt"

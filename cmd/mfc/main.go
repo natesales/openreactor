@@ -6,8 +6,6 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-
-	"github.com/natesales/openreactor/mfc"
 )
 
 var (
@@ -36,7 +34,7 @@ func main() {
 		log.SetLevel(log.TraceLevel)
 	}
 
-	m := mfc.Controller{
+	m := Controller{
 		Port: *mfcSerialPort,
 	}
 	log.Infof("Connecting to MFC on %s", m.Port)

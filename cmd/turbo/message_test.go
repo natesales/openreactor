@@ -6,14 +6,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMainZeroPad(t *testing.T) {
+func TestTurboZeroPad(t *testing.T) {
 	assert.Equal(t, "000", zeroPad(0, 3))
 	assert.Equal(t, "001", zeroPad(1, 3))
 	assert.Equal(t, "001", zeroPad("1", 3))
 	assert.Equal(t, "123", zeroPad("123", 3))
 }
 
-func TestMainCksum(t *testing.T) {
+func TestTurboCksum(t *testing.T) {
 	tcs := []struct {
 		s string
 		e string

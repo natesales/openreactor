@@ -8,7 +8,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/natesales/openreactor/db"
-	"github.com/natesales/openreactor/turbo"
 )
 
 var (
@@ -37,7 +36,7 @@ func main() {
 		log.SetLevel(log.TraceLevel)
 	}
 
-	t := turbo.Controller{
+	t := Controller{
 		Port: *pumpSerialPort,
 		Addr: 1,
 	}

@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/natesales/openreactor/db"
 
-	"github.com/natesales/openreactor/gauge"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -23,8 +23,9 @@ func main() {
 		log.SetLevel(log.TraceLevel)
 	}
 
-	g := gauge.Controller{
+	g := Controller{
 		Port: *gaugeSerialPort,
+		LUT:  EdwardsAimS,
 	}
 	log.Infof("Connecting to gauge on %s", g.Port)
 	if err := g.Connect(); err != nil {
@@ -32,5 +33,12 @@ func main() {
 	}
 
 	log.Info("Starting gauge streamer")
-	g.Stream()
+	g.Stream(func(voltage, torr float64) {
+		if err := db.Write("vacuum_torr", nil, map[string]any{"high": torr}); err != nil {
+			log.Warn(err)
+		}
+		if err := db.Write("vacuum_volt", nil, map[string]any{"high": voltage}); err != nil {
+			log.Warn(err)
+		}
+	})
 }
