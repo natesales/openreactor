@@ -66,27 +66,17 @@ class DfrobotGP8403:
         self._i2cfreq = i2cfreq
         self._hard = hard
 
-        # Need it because "store" bit bangs and uninitialize the I2C bus
-        self._initializeI2C()
-
-    def _initializeI2C(self):
         if self._hard:
             self.i2c = machine.I2C(0,
                                    scl=self._scl,
                                    sda=self._sda,
                                    freq=self._i2cfreq)
         else:
-            # Pylance is not happy with this because stubs are wrong.
-            # see: https://github.com/paulober/Pico-W-Go/issues/55
             self.i2c = machine.SoftI2C(scl=self._scl,
                                        sda=self._sda,
                                        freq=self._i2cfreq)
 
     def begin(self):
-        # List devices
-        print("Found i2c addresses: ", self.i2c.scan())
-
-        # Initialize the sensor
         try:
             if self.i2c.readfrom(self._addr, 1) != 0:
                 return 0
@@ -118,10 +108,11 @@ class DfrobotGP8403:
     def set_dac_out_voltage(self, data, channel):
         """
         Select DAC output channel & range
-        :param data: Set voltage in mV between 0-5000 or 0-10000 depending on range
+        :param data: Set voltage in V between 0-5 or 0-10 depending on range
         :param channel: Set output channel
         """
-        cmd = int((float(data) / self.voltage) * 4095)
+        cmd = int((float(data*1000) / self.voltage) * 4095)
+        print(f"Setting v to {cmd}")
         cmd = int(cmd) << 4
         self._send_data(cmd, channel)
 
@@ -180,3 +171,27 @@ class DfrobotGP8403:
             self._sda.low()
             self._scl.high()
         return ack
+
+DAC = DfrobotGP8403(0x5F, 5, 4, 400000, False)
+
+while DAC.begin() != 0:
+    print("Init error")
+print("Init succeed")
+
+DAC.set_dac_out_range(OUTPUT_RANGE_10V)
+
+DAC.set_dac_out_voltage(1.337,0)
+DAC.set_dac_out_voltage(10, 1)
+
+inhibit_pin = machine.Pin(14, machine.Pin.OUT)
+
+# 7 Enable/Inhibit Ground = Inhibit, Open = HV ON
+def hv_on(state): # True to 
+    if state:
+        print("Opening inhibit pin (turning supply on)")
+        inhibit_pin.value(0)
+    else:
+        print("Inhibiting")
+        inhibit_pin.value(1)
+
+hv_on(True)
