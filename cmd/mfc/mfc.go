@@ -61,7 +61,6 @@ func (c *Controller) sendMessage(message string) (string, error) {
 	if c.p.ResetInputBuffer(); err != nil {
 		return "", err
 	}
-	c.lock.Unlock()
 
 	buf := make([]byte, 0)
 
@@ -79,6 +78,8 @@ func (c *Controller) sendMessage(message string) (string, error) {
 
 		buf = append(buf, b[0])
 	}
+
+	c.lock.Unlock()
 
 	out := string(buf)
 	response := out[:len(out)-2]
@@ -115,4 +116,28 @@ func (c *Controller) SetFlowRate(f float64) error {
 		return fmt.Errorf("unexpected return setpoint %f, expected %f", fSet, f)
 	}
 	return nil
+}
+
+func (c *Controller) float(label string) (float64, error) {
+	resp, err := c.sendMessage("?" + label)
+	if err != nil {
+		return -1, err
+	}
+
+	f, err := strconv.ParseFloat(strings.TrimPrefix(resp, label), 64)
+	if err != nil {
+		return -1, err
+	}
+
+	return f, nil
+}
+
+// GetFlowRate gets the current mass flow rate
+func (c *Controller) GetFlowRate() (float64, error) {
+	return c.float("Flow")
+}
+
+// SetPoint gets the current flow rate setpoint
+func (c *Controller) SetPoint() (float64, error) {
+	return c.float("Sinv")
 }
