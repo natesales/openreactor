@@ -30,6 +30,9 @@ while True:
     gauge_voltage = channel_voltage(adc_c0)
     print(f"{gauge_voltage};")
 
+    if gauge_voltage < 2 or gauge_voltage > 10:
+        gauge.value = False
+
     if time.time() - last_gauge_check > GAUGE_CHECK_SEC:
         last_gauge_check = time.time()
         if not gauge.value:
