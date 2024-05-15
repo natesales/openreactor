@@ -1,4 +1,0 @@
-numpy
-matplotlib
-pyserial
-influxdb-client
