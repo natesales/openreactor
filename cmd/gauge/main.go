@@ -9,9 +9,9 @@ import (
 )
 
 var (
-	gaugeSerialPort = flag.String("gauge", "/dev/ttyACM0", "Gauge controller serial port")
-	verbose         = flag.Bool("v", false, "Enable verbose logging")
-	trace           = flag.Bool("trace", false, "Enable trace logging")
+	serialPort = flag.String("s", "/gauge", "Gauge controller serial port")
+	verbose    = flag.Bool("v", false, "Enable verbose logging")
+	trace      = flag.Bool("trace", false, "Enable trace logging")
 )
 
 func main() {
@@ -24,7 +24,7 @@ func main() {
 	}
 
 	g := Controller{
-		Port: *gaugeSerialPort,
+		Port: *serialPort,
 		LUT:  EdwardsAimS,
 	}
 	log.Infof("Connecting to gauge on %s", g.Port)

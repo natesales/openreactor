@@ -12,11 +12,11 @@ import (
 )
 
 var (
-	mfcSerialPort = flag.String("pump", "/dev/ttyS1", "Pump serial port")
-	apiListen     = flag.String("l", ":8089", "API listen address")
-	pushInterval  = flag.Duration("i", 1*time.Second, "Metrics push interval")
-	verbose       = flag.Bool("v", false, "Enable verbose logging")
-	trace         = flag.Bool("trace", false, "Enable trace logging")
+	serialPort   = flag.String("s", "/mfc", "Serial port")
+	apiListen    = flag.String("l", ":80", "API listen address")
+	pushInterval = flag.Duration("i", 1*time.Second, "Metrics push interval")
+	verbose      = flag.Bool("v", false, "Enable verbose logging")
+	trace        = flag.Bool("trace", false, "Enable trace logging")
 )
 
 func main() {
@@ -31,7 +31,7 @@ func main() {
 	}
 
 	m := Controller{
-		Port: *mfcSerialPort,
+		Port: *serialPort,
 	}
 	log.Infof("Connecting to MFC on %s", m.Port)
 	if err := m.Connect(); err != nil {

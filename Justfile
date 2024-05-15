@@ -10,3 +10,11 @@ build component:
 exec component:
     just build {{component}}
     sudo ./{{component}}d
+
+turbo-on:
+    docker compose exec -it turbo curl localhost:80/turbo/on
+turbo-off:
+    docker compose exec -it turbo curl localhost:80/turbo/off
+
+logs svc:
+    docker compose logs {{svc}}

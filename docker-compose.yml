@@ -1,0 +1,33 @@
+services:
+  gauge:
+    image: openreactor/gauge
+    build:
+      context: .
+      args:
+      - SVC=gauge
+    devices:
+      - /dev/ttyACM0:/gauge
+    ports:
+      - 8080:80
+
+  turbo:
+    image: openreactor/turbo
+    build:
+      context: .
+      args:
+      - SVC=turbo
+    devices:
+      - /dev/ttyS1:/pump
+    ports:
+      - 8081:80
+
+  mfc:
+    image: openreactor/mfc
+    build:
+      context: .
+      args:
+      - SVC=mfc
+    devices:
+      - /dev/ttyUSB0:/mfc
+    ports:
+      - 8082:80

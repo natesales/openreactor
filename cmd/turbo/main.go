@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	pumpSerialPort = flag.String("pump", "/dev/ttyS0", "Pump serial port")
-	apiListen      = flag.String("l", ":8088", "API listen address")
+	pumpSerialPort = flag.String("pump", "/pump", "Pump serial port")
+	apiListen      = flag.String("l", ":80", "API listen address")
 	pushInterval   = flag.Duration("i", 1*time.Second, "Metrics push interval")
 	verbose        = flag.Bool("v", false, "Enable verbose logging")
 	trace          = flag.Bool("trace", false, "Enable trace logging")
