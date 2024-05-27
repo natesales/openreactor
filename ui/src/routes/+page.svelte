@@ -8,10 +8,11 @@
     function eStop() {
         apiCall("/hv/set?v=0");
         apiCall("/mfc/set?slpm=0");
+        apiCall("/turbo/turbo/off")
     }
 </script>
 
-<h1>OpenReactor HV Supply Controller</h1>
+<h1>OpenReactor Mobile Control</h1>
 
 <div class="row">
     <div class="group">
@@ -20,8 +21,8 @@
             <ActionButton icon={BoltSlash} label="Off" action="/hv/set?v=0"/>
             <SettableField label="Voltage Setpoint" prefix="/hv/set?v="/>
         </div>
-        <h3>Quick Actions</h3>
-        <ButtonGroup prefix="/hv/set?v=" options={[0, 1, 5, 10]}/>
+        <h3>Quick Actions (x10 kV)</h3>
+        <ButtonGroup prefix="/hv/set?v=" options={[0.5, 1, 1.5, 2, 2.25]}/>
     </div>
 
     <div class="group">
@@ -31,8 +32,8 @@
             <SettableField label="Flow Rate Setpoint" prefix="/mfc/set?slpm="/>
 
         </div>
-        <h3>Quick Actions</h3>
-        <ButtonGroup prefix="/mfc/set?slpm=" options={[0, 0.1, 0.9]}/>
+        <h3>Quick Actions (SLPM)</h3>
+        <ButtonGroup prefix="/mfc/set?slpm=" options={[0.02, 0.05, 0.1, 0.2]}/>
     </div>
 </div>
 
@@ -73,11 +74,6 @@
     }
 
     .bottom {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: calc(100% - 20px);
-        margin: 0 10px;
     }
 
     .row {
