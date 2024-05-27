@@ -1,0 +1,22 @@
+setup: piper-app piper-voice
+
+piper-app:
+    #!/bin/bash
+    PIPER_VERSION=1.2.0
+    if [ -f "piper/piper" ] && [ $(piper/piper --version) == "$PIPER_VERSION" ]; then
+            echo "Piper version $PIPER_VERSION already exists"
+            exit 0
+        fi
+    fi
+    cd tts
+    rm -rf piper
+    wget https://github.com/rhasspy/piper/releases/download/v$PIPER_VERSION/piper_amd64.tar.gz -O piper.tgz
+    tar -xvf piper.tgz
+    rm piper.tgz
+
+piper-voice:
+    wget https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/hfc_male/medium/en_US-hfc_male-medium.onnx?download=true -O voice.onnx
+    wget https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/hfc_male/medium/en_US-hfc_male-medium.onnx.json?download=true.json -O voice.onnx.json
+
+speak s:
+    echo {{s}} | ./piper/piper --model voice.onnx --output-raw | aplay -r 22050 -f S16_LE -t raw -

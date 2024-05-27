@@ -6,3 +6,6 @@ mfcd
 gauged
 hvd
 coprocs/venv
+tts/voice.onnx
+tts/voice.onnx.json
+tts/piper/

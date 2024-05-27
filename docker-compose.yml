@@ -50,3 +50,14 @@ services:
       - /dev/ttyUSB1:/hv
     ports:
       - "8083:80"
+
+  tts:
+    image: openreactor/tts
+    build:
+      context: tts/server
+    volumes:
+      - ./tts/voice.onnx:/voice.onnx
+      - ./tts/voice.onnx.json:/voice.onnx.json
+      - ./tts/piper/:/piper/
+    ports:
+      - "8084:80"

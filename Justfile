@@ -23,3 +23,6 @@ logs svc:
 ui:
     cd ui && npm run build
     docker compose restart caddy
+
+piper-setup:
+    cd tts && just
