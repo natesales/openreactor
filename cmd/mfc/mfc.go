@@ -58,7 +58,7 @@ func (c *Controller) sendMessage(message string) (string, error) {
 			'\r',
 		),
 	)
-	if c.p.ResetInputBuffer(); err != nil {
+	if err := c.p.ResetInputBuffer(); err != nil {
 		return "", err
 	}
 
