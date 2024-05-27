@@ -4,12 +4,12 @@
 
     export let label;
     export let prefix;
-    export let v = 0.0;
+    export let value = 0.0;
 </script>
 
 <div>
-    <input type="number" inputmode="decimal" bind:value={v}>
-    <ActionButton right label="Set" action={() => apiCall(`${prefix}${v}`)}/>
+    <input type="number" inputmode="decimal" bind:value={value}>
+    <ActionButton right label="Set" action={() => apiCall(`${prefix}${value}`)}/>
 </div>
 <label>{label}</label>
 
