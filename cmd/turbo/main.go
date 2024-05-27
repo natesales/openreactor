@@ -7,8 +7,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/natesales/openreactor/pkg/alert"
 	"github.com/natesales/openreactor/pkg/db"
-	"github.com/natesales/openreactor/pkg/util"
 )
 
 var (
@@ -43,8 +43,20 @@ func main() {
 	}
 	log.Infof("Turbo pump %s", fw)
 
-	http.HandleFunc("/on", util.HandleExec(t.On))
-	http.HandleFunc("/off", util.HandleExec(t.Off))
+	http.HandleFunc("/on", func(w http.ResponseWriter, r *http.Request) {
+		alert.Alert("Starting turbo")
+		if err := t.On(); err != nil {
+			w.Write([]byte("Error: " + err.Error()))
+		}
+		w.Write([]byte("ok"))
+	})
+	http.HandleFunc("/off", func(w http.ResponseWriter, r *http.Request) {
+		alert.Log("Stopping turbo")
+		if err := t.Off(); err != nil {
+			w.Write([]byte("Error: " + err.Error()))
+		}
+		w.Write([]byte("ok"))
+	})
 
 	log.Infof("Starting API on %s", *apiListen)
 	go http.ListenAndServe(*apiListen, nil)

@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/natesales/openreactor/pkg/alert"
 	"net/http"
 	"strconv"
 	"time"
@@ -55,6 +56,11 @@ func main() {
 		v, err := strconv.ParseFloat(r.URL.Query().Get("v"), 64)
 		if err != nil {
 			w.Write([]byte(fmt.Sprintf("error parsing slpm URL param: %v", err)))
+		}
+		if v == 0 {
+			alert.Alert("Disabling HV supply")
+		} else {
+			alert.Alert(fmt.Sprintf("Setting voltage to %.4f", v))
 		}
 		log.Infof("Setting voltage to %f", v)
 		resp, err := c.sendMessage(fmt.Sprintf("%f", v))

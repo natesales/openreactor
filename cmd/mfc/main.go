@@ -9,6 +9,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/natesales/openreactor/pkg/alert"
 	"github.com/natesales/openreactor/pkg/db"
 )
 
@@ -49,6 +50,11 @@ func main() {
 		slpm, err := strconv.ParseFloat(r.URL.Query().Get("slpm"), 64)
 		if err != nil {
 			w.Write([]byte(fmt.Sprintf("error parsing slpm URL param: %v", err)))
+		}
+		if slpm == 0 {
+			alert.Log("Closing MFC")
+		} else {
+			alert.Alert(fmt.Sprintf("Setting flow rate to %.4f", slpm))
 		}
 		log.Infof("Setting flow rate to %f", slpm)
 		if err := m.SetFlowRate(slpm); err != nil {
