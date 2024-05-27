@@ -14,7 +14,7 @@ services:
       args:
       - SVC=gauge
     devices:
-      - /dev/ttyACM1:/gauge
+      - /dev/ttyACM0:/gauge
     ports:
       - "8080:80"
 
