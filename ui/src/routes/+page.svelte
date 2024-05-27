@@ -1,5 +1,4 @@
 <script>
-    import ActionButton from "$lib/ActionButton.svelte";
     import {
         BoltSlash,
         ExclamationTriangle,
@@ -9,24 +8,56 @@
         StopCircle,
         XMark
     } from "svelte-hero-icons";
-    import SettableField from "$lib/SettableField.svelte";
+
     import {apiCall} from "$lib/api";
-    import ButtonGroup from "../lib/ButtonGroup.svelte";
-    import IconToggle from "../lib/IconToggle.svelte";
+    import {addLog} from "$lib/log";
+    import {onMount} from "svelte";
+
+    import ActionButton from "$lib/ActionButton.svelte";
+    import SettableField from "$lib/SettableField.svelte";
+    import ButtonGroup from "$lib/ButtonGroup.svelte";
+    import IconToggle from "$lib/IconToggle.svelte";
+    import Logs from "$lib/Logs.svelte";
+
+    let muted = true;
 
     function eStop() {
         apiCall("/hv/set?v=0");
         apiCall("/mfc/set?slpm=0");
-        apiCall("/turbo/turbo/off")
+        apiCall("/turbo/turbo/off");
     }
 
-    let muted = false;
+    onMount(() => {
+        const ws = new WebSocket("ws://localhost:8081/ws");
+        addLog(new Date().toLocaleString(), "Connecting to WebSocket server...");
+
+        ws.onopen = () => {
+            addLog(new Date().toLocaleString(), "WebSocket connected");
+        };
+        ws.onclose = () => {
+            addLog(new Date().toLocaleString(), "WebSocket closed");
+        };
+        ws.onerror = (event) => {
+            addLog(new Date().toLocaleString(), "WebSocket error");
+        };
+
+        ws.onmessage = (event) => {
+            addLog(new Date().toLocaleString(), "WS message: " + event.data);
+            const data = JSON.parse(event.data);
+            if (data.type === "alert") {
+                new Audio("http://localhost:8084/tts?text=" + data.text).play();
+            }
+        };
+    });
 </script>
 
 <h1>OpenReactor Mobile Control</h1>
 
+<ActionButton danger wide icon={ExclamationTriangle} label="Emergency Stop" action={eStop}/>
+
+<audio autoplay {muted} src="http://localhost:8084/tts?text=hello+world this is a thing that I am testing"/>
+
 <IconToggle onIcon={SpeakerXMark} offIcon={SpeakerWave} bind:value={muted}/>
-Muted? {muted ? "Yes" : "No"}
 
 <div class="row">
     <div class="group">
@@ -59,7 +90,7 @@ Muted? {muted ? "Yes" : "No"}
     </div>
 </div>
 
-<ActionButton danger wide icon={ExclamationTriangle} label="Emergency Stop" action={eStop}/>
+<Logs/>
 
 <style>
     .row {
