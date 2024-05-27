@@ -57,6 +57,7 @@ type Controller struct {
 	Port string
 	LUT  []util.Point
 
+	last float64
 	p    serial.Port
 	lock sync.Mutex
 }
@@ -86,6 +87,10 @@ func (c *Controller) Reconnect() error {
 	return c.Connect()
 }
 
+func (c *Controller) Ok() bool {
+	return c.last > 0
+}
+
 // Stream streams gauge data into the database
 func (c *Controller) Stream(report func(voltage, torr float64)) {
 	buf := make([]byte, 0)
@@ -108,6 +113,7 @@ func (c *Controller) Stream(report func(voltage, torr float64)) {
 
 			log.Debugf("%.2fV %.2e torr", voltage, torr)
 			report(voltage, torr)
+			c.last = voltage
 
 			buf = make([]byte, 0)
 		} else {

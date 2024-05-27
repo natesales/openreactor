@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"net/http"
 
 	"github.com/natesales/openreactor/db"
 
@@ -10,6 +11,7 @@ import (
 
 var (
 	serialPort = flag.String("s", "/gauge", "Gauge controller serial port")
+	listen     = flag.String("l", ":80", "HTTP listen address")
 	verbose    = flag.Bool("v", false, "Enable verbose logging")
 	trace      = flag.Bool("trace", false, "Enable trace logging")
 )
@@ -31,6 +33,17 @@ func main() {
 	if err := g.Connect(); err != nil {
 		log.Fatal(err)
 	}
+
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		if g.Ok() {
+			w.Write([]byte("ok"))
+		} else {
+			w.WriteHeader(500)
+			w.Write([]byte("fail"))
+		}
+	})
+	log.Infof("Starting API on %s", *listen)
+	go http.ListenAndServe(*listen, nil)
 
 	log.Info("Starting gauge streamer")
 	g.Stream(func(voltage, torr float64) {
