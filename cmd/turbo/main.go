@@ -43,8 +43,8 @@ func main() {
 	}
 	log.Infof("Turbo pump %s", fw)
 
-	http.HandleFunc("/turbo/on", util.HandleExec(t.On))
-	http.HandleFunc("/turbo/off", util.HandleExec(t.Off))
+	http.HandleFunc("/on", util.HandleExec(t.On))
+	http.HandleFunc("/off", util.HandleExec(t.Off))
 
 	log.Infof("Starting API on %s", *apiListen)
 	go http.ListenAndServe(*apiListen, nil)

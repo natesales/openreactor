@@ -15,11 +15,6 @@ exec component *args="":
     just build {{component}}
     sudo ./svc-{{component}} ${@:2}
 
-turbo-on:
-    docker compose exec -it turbo curl localhost:80/turbo/on
-turbo-off:
-    docker compose exec -it turbo curl localhost:80/turbo/off
-
 logs svc:
     docker compose logs {{svc}}
 
