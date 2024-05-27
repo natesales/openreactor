@@ -2,10 +2,10 @@ import {writable} from "svelte/store";
 
 export const logs = writable([]);
 
-export function addLog(time, text) {
+export function addLog(text) {
     logs.update((currentLogs) => {
         return [...currentLogs, {
-            time: time,
+            time: new Date().toLocaleString(),
             text: text
         }];
     });

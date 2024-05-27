@@ -18,8 +18,9 @@
     import ButtonGroup from "$lib/ButtonGroup.svelte";
     import IconToggle from "$lib/IconToggle.svelte";
     import Logs from "$lib/Logs.svelte";
+    import ConnectionChip from "$lib/ConnectionChip.svelte";
 
-    let muted = true;
+    let muted = false;
 
     function eStop() {
         apiCall("/hv/set?v=0");
@@ -27,37 +28,52 @@
         apiCall("/turbo/turbo/off");
     }
 
-    onMount(() => {
-        const ws = new WebSocket("ws://localhost:8081/ws");
-        addLog(new Date().toLocaleString(), "Connecting to WebSocket server...");
+    let wsConnected;
+
+    function wsConnect() {
+        const ws = new WebSocket("ws://localhost:8085/ws");
+        addLog("Connecting to WebSocket server...");
 
         ws.onopen = () => {
-            addLog(new Date().toLocaleString(), "WebSocket connected");
+            wsConnected = true;
+            addLog("WebSocket connected");
         };
         ws.onclose = () => {
-            addLog(new Date().toLocaleString(), "WebSocket closed");
+            wsConnected = false;
+            addLog("WebSocket closed");
         };
         ws.onerror = (event) => {
-            addLog(new Date().toLocaleString(), "WebSocket error");
+            addLog("WebSocket error");
         };
-
         ws.onmessage = (event) => {
-            addLog(new Date().toLocaleString(), "WS message: " + event.data);
-            const data = JSON.parse(event.data);
-            if (data.type === "alert") {
-                new Audio("http://localhost:8084/tts?text=" + data.text).play();
+            let data = JSON.parse(event.data);
+            switch (data["type"]) {
+                case "logMessage":
+                    addLog(data["message"]);
+                    break;
+                case "audioAlert":
+                    addLog(data["text"]);
+                    if (!muted) {
+                        new Audio("http://localhost:8084/audio?text=" + encodeURIComponent(data["text"])).play();
+                    }
+                    break;
+                default:
+                    addLog("Unknown message type: " + data["type"]);
             }
         };
-    });
+    }
+
+    onMount(wsConnect);
 </script>
 
 <h1>OpenReactor Mobile Control</h1>
 
 <ActionButton danger wide icon={ExclamationTriangle} label="Emergency Stop" action={eStop}/>
 
-<audio autoplay {muted} src="http://localhost:8084/tts?text=hello+world this is a thing that I am testing"/>
-
-<IconToggle onIcon={SpeakerXMark} offIcon={SpeakerWave} bind:value={muted}/>
+<div class="row">
+    <IconToggle onIcon={SpeakerXMark} offIcon={SpeakerWave} bind:value={muted}/>
+    <ConnectionChip connected={wsConnected}/>
+</div>
 
 <div class="row">
     <div class="group">
@@ -96,6 +112,8 @@
     .row {
         display: flex;
         flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
         justify-content: space-between;
         padding-bottom: 20px;
         border-bottom: 1px solid var(--border);
