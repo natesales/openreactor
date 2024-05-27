@@ -15,6 +15,7 @@ var (
 	listenAddr = flag.String("l", ":8084", "server listen address")
 	piperBin   = flag.String("p", "./tts/piper/piper", "path to piper binary")
 	voiceModel = flag.String("m", "./tts/voice.onnx", "path to voice model")
+	verbose    = flag.Bool("v", false, "verbose logging")
 )
 
 func internalServerError(w http.ResponseWriter, err error, args ...string) {
@@ -26,6 +27,11 @@ func internalServerError(w http.ResponseWriter, err error, args ...string) {
 }
 
 func main() {
+	flag.Parse()
+	if *verbose {
+		log.SetLevel(log.DebugLevel)
+	}
+
 	http.HandleFunc("/tts", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Connection", "Keep-Alive")
 		w.Header().Set("Transfer-Encoding", "chunked")
