@@ -64,12 +64,17 @@ func main() {
 		}
 	})
 
+	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("alert server ok"))
+	})
+
 	mux.HandleFunc("/log", func(w http.ResponseWriter, r *http.Request) {
 		emit(map[string]string{
 			"type":    "logMessage",
 			"message": r.URL.Query().Get("msg"),
 		})
 	})
+
 	mux.HandleFunc("/alert", func(w http.ResponseWriter, r *http.Request) {
 		emit(map[string]string{
 			"type": "audioAlert",
@@ -80,12 +85,5 @@ func main() {
 	log.WithFields(log.Fields{
 		"listenAddr": *listenAddr,
 	}).Info("Starting server")
-	log.Fatal(http.ListenAndServe(*listenAddr, addCORS(mux)))
-}
-
-func addCORS(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		next.ServeHTTP(w, r)
-	})
+	log.Fatal(http.ListenAndServe(*listenAddr, mux))
 }

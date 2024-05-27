@@ -61,3 +61,12 @@ services:
       - ./tts/piper/:/piper/
     ports:
       - "8084:80"
+
+  alert:
+    image: openreactor/alert
+    build:
+      context: .
+      args:
+        - SVC=alert
+    ports:
+      - "8085:80"

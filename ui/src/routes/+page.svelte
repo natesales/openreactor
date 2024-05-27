@@ -31,7 +31,7 @@
     let wsConnected;
 
     function wsConnect() {
-        const ws = new WebSocket("ws://localhost:8085/ws");
+        const ws = new WebSocket(`ws://${window.location.host}/alert/ws`);
         addLog("Connecting to WebSocket server...");
 
         ws.onopen = () => {
@@ -54,7 +54,7 @@
                 case "audioAlert":
                     addLog(data["text"]);
                     if (!muted) {
-                        new Audio("http://localhost:8084/audio?text=" + encodeURIComponent(data["text"])).play();
+                        new Audio("/tts/audio?text=" + encodeURIComponent(data["text"])).play();
                     }
                     break;
                 default:

@@ -32,7 +32,11 @@ func main() {
 		log.SetLevel(log.DebugLevel)
 	}
 
-	http.HandleFunc("/tts", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("tts server ok"))
+	})
+
+	http.HandleFunc("/audio", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Connection", "Keep-Alive")
 		w.Header().Set("Transfer-Encoding", "chunked")
 
