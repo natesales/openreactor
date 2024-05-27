@@ -12,6 +12,7 @@
 
 import machine
 import utime
+from machine import UART
 
 # Select DAC output voltage of 0-5V
 OUTPUT_RANGE_5V = 0
@@ -180,8 +181,8 @@ print("Init succeed")
 
 DAC.set_dac_out_range(OUTPUT_RANGE_10V)
 
-DAC.set_dac_out_voltage(1.337,0)
-DAC.set_dac_out_voltage(10, 1)
+DAC.set_dac_out_voltage(1.337, 0)
+DAC.set_dac_out_voltage(0, 1)
 
 inhibit_pin = machine.Pin(14, machine.Pin.OUT)
 
@@ -194,4 +195,22 @@ def hv_on(state): # True to
         print("Inhibiting")
         inhibit_pin.value(1)
 
-hv_on(True)
+import uselect
+
+serialPoll = uselect.poll()
+serialPoll.register(sys.stdin, uselect.POLLIN)
+
+print("Polling STDIN...")
+msg = ""
+while True:
+    c = sys.stdin.read(1).strip() if serialPoll.poll(0) else None
+    if c:
+        if str(c) == ";":
+            try:
+                n = float(msg.strip())
+                DAC.set_dac_out_voltage(n, 0)
+            except ValueError:
+                pass
+            msg = ""
+        else:
+            msg += c
