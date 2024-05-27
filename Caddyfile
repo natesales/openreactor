@@ -1,7 +1,4 @@
-:80 {
-    header Access-Control-Allow-Origin "https://*.westland.as34553.net"
-    header Access-Control-Allow-Credentials "true"
-
+:80, :443 {
     root * /srv
     file_server browse
 
