@@ -10,4 +10,4 @@ FROM debian:bullseye-slim
 COPY --from=builder /app/main /app/main
 
 EXPOSE 80
-CMD ["/app/main", "-l", ":80", "-p", "/piper", "-m", "/voice.onnx"]
+CMD ["/app/main", "-l", ":80", "-p", "/piper/piper", "-m", "/voice.onnx"]
