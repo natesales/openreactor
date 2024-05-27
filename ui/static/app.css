@@ -1,0 +1,22 @@
+:root {
+    --background: #151515;
+    --background-body: #0f0f0f;
+    --background-alt: #272727;
+    --selection: #bb07d6;
+    --text-main: #e3e3e3;
+    --text-bright: #ffffff;
+    --text-muted: #a9b1ba;
+    --links: #c706e3;
+    --focus: rgba(230, 230, 230, 0.67);
+    --border: #272727;
+    --code: #ffffff;
+    --animation-duration: 0.1s;
+    --button-base: #373737;
+    --button-hover: #121212;
+    --scrollbar-thumb: var(--button-hover);
+    --scrollbar-thumb-hover: #ffffff;
+    --form-placeholder: #a9a9a9;
+    --form-text: #fff;
+    --variable: #d941e2;
+    --highlight: #ffffff;
+}
