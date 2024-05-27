@@ -8,6 +8,7 @@
 
     export let danger = false;
     export let wide = false;
+    export let small = false;
     export let right = false;
 </script>
 
@@ -15,6 +16,7 @@
     <button
             class:danger={danger}
             class:wide={wide}
+            class:small={small}
             class:right={right}
             on:click={() => {
                 if (typeof action === "string") {
@@ -25,7 +27,7 @@
             }}>
         <span>
             {#if icon}
-                <span class="icon"><Icon src={icon} size="24"/></span>
+                <span class:icon={label}><Icon src={icon} size="24"/></span>
             {/if}{label}
         </span>
     </button>
@@ -37,9 +39,6 @@
         margin-bottom: 1em;
     }
 
-    button.wide {
-        width: 100%;
-    }
 
     button span {
         display: flex;
@@ -47,18 +46,26 @@
         justify-content: center;
     }
 
-    .right {
+    button.wide {
+        width: 100%;
+    }
+
+    button.small {
+        padding: 1em 1em;
+    }
+
+    button.right {
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
-        width: 0px;
+        width: 0;
         margin-bottom: 0;
+    }
+
+    button.danger {
+        background-color: #ff0000;
     }
 
     .icon {
         margin-right: 0.5em;
-    }
-
-    .danger {
-        background-color: #ff0000;
     }
 </style>

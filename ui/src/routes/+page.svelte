@@ -1,18 +1,32 @@
 <script>
     import ActionButton from "$lib/ActionButton.svelte";
-    import {BoltSlash, ExclamationTriangle, Power, StopCircle, XMark} from "svelte-hero-icons";
+    import {
+        BoltSlash,
+        ExclamationTriangle,
+        Power,
+        SpeakerWave,
+        SpeakerXMark,
+        StopCircle,
+        XMark
+    } from "svelte-hero-icons";
     import SettableField from "$lib/SettableField.svelte";
     import {apiCall} from "$lib/api";
     import ButtonGroup from "../lib/ButtonGroup.svelte";
+    import IconToggle from "../lib/IconToggle.svelte";
 
     function eStop() {
         apiCall("/hv/set?v=0");
         apiCall("/mfc/set?slpm=0");
         apiCall("/turbo/turbo/off")
     }
+
+    let muted = false;
 </script>
 
 <h1>OpenReactor Mobile Control</h1>
+
+<IconToggle onIcon={SpeakerXMark} offIcon={SpeakerWave} bind:value={muted}/>
+Muted? {muted ? "Yes" : "No"}
 
 <div class="row">
     <div class="group">
@@ -45,37 +59,9 @@
     </div>
 </div>
 
-<div class="bottom">
-    <ActionButton danger wide icon={ExclamationTriangle} label="Emergency Stop" action={eStop}/>
-</div>
+<ActionButton danger wide icon={ExclamationTriangle} label="Emergency Stop" action={eStop}/>
 
-<style global>
-    :root {
-        --background: #151515;
-        --background-body: #0f0f0f;
-        --background-alt: #272727;
-        --selection: #bb07d6;
-        --text-main: #e3e3e3;
-        --text-bright: #ffffff;
-        --text-muted: #a9b1ba;
-        --links: #c706e3;
-        --focus: rgba(230, 230, 230, 0.67);
-        --border: #272727;
-        --code: #ffffff;
-        --animation-duration: 0.1s;
-        --button-base: #373737;
-        --button-hover: #121212;
-        --scrollbar-thumb: var(--button-hover);
-        --scrollbar-thumb-hover: #ffffff;
-        --form-placeholder: #a9a9a9;
-        --form-text: #fff;
-        --variable: #d941e2;
-        --highlight: #ffffff;
-    }
-
-    .bottom {
-    }
-
+<style>
     .row {
         display: flex;
         flex-direction: row;
