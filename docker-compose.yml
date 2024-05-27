@@ -3,7 +3,7 @@ services:
     image: caddy:2
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
-      - ./ui:/public
+      - ./ui/build/:/srv/
     ports:
       - "80:80"
 

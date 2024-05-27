@@ -19,3 +19,7 @@ turbo-off:
 
 logs svc:
     docker compose logs {{svc}}
+
+ui:
+    cd ui && npm run build
+    docker compose restart caddy
