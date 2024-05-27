@@ -9,7 +9,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/natesales/openreactor/db"
+	"github.com/natesales/openreactor/pkg/db"
 )
 
 var (

@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"go.bug.st/serial"
 
-	"github.com/natesales/openreactor/util"
+	"github.com/natesales/openreactor/pkg/util"
 )
 
 var EdwardsAimS = []util.Point{

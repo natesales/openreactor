@@ -7,8 +7,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/natesales/openreactor/db"
-	"github.com/natesales/openreactor/util"
+	"github.com/natesales/openreactor/pkg/db"
+	"github.com/natesales/openreactor/pkg/util"
 )
 
 var (
