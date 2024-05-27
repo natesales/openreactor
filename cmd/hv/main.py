@@ -43,7 +43,7 @@ class DfrobotGP8403:
     I2C_CYCLE_BEFORE = 2
     # The second half cycle of the total I2C communication cycle 3us
     I2C_CYCLE_AFTER = 3
-    # Store procedure interval delay time: 10ms (1000us) 
+    # Store procedure interval delay time: 10ms (1000us)
     # (should be more than 7ms according to spec)
     GP8302_STORE_TIMING_DELAY = 1000
 
@@ -187,7 +187,7 @@ DAC.set_dac_out_voltage(0, 1)
 inhibit_pin = machine.Pin(14, machine.Pin.OUT)
 
 # 7 Enable/Inhibit Ground = Inhibit, Open = HV ON
-def hv_on(state): # True to 
+def hv_on(state): # True to
     if state:
         print("Opening inhibit pin (turning supply on)")
         inhibit_pin.value(0)

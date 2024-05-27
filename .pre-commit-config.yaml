@@ -1,0 +1,42 @@
+exclude: '^\.vscode/|^\.idea/|^\.git/|^\.run/'
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-json
+      - id: check-toml
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  - repo: https://github.com/natesales/goimports-reviser
+    rev: a807b1af1da00a44880668d880ef7d4ce51feb42
+    hooks:
+      - id: goimports-reviser
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.2.5
+    hooks:
+      - id: codespell
+        args: [ --skip, "go.*" ]
+        stages: [ commit, commit-msg ]
+        exclude_types: [ json ]
+
+  - repo: https://github.com/dnephin/pre-commit-golang
+    rev: v0.5.1
+    hooks:
+      - id: go-build
+      - id: go-mod-tidy
+
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v1.57.2
+    hooks:
+      - id: golangci-lint-full
+        args:
+          - "--fix"
+          - "--enable=gocyclo"
+          - "--enable=goimports"
+          - "--enable=gofmt"
+          - "--enable=gocritic"

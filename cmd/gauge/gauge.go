@@ -1,12 +1,10 @@
 package main
 
 import (
-	"strconv"
-	"strings"
-	"sync"
-
 	log "github.com/sirupsen/logrus"
 	"go.bug.st/serial"
+	"strconv"
+	"strings"
 
 	"github.com/natesales/openreactor/util"
 )
@@ -59,7 +57,6 @@ type Controller struct {
 
 	last float64
 	p    serial.Port
-	lock sync.Mutex
 }
 
 // Connect connects to the serial port

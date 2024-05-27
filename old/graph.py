@@ -8,7 +8,7 @@ ys = []
 
 for i in range(10):
     y = np.random.random()
-   
+
     xs.append(i)
     ys.append(y)
     plt.clear()
