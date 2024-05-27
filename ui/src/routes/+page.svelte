@@ -66,6 +66,10 @@
     onMount(wsConnect);
 </script>
 
+<svelte:head>
+    <title>OpenReactor | Mobile Control</title>
+</svelte:head>
+
 <h1>OpenReactor Mobile Control</h1>
 
 <ActionButton danger wide icon={ExclamationTriangle} label="Emergency Stop" action={eStop}/>
