@@ -4,9 +4,9 @@ import (
 	"flag"
 	"net/http"
 
-	"github.com/natesales/openreactor/db"
-
 	log "github.com/sirupsen/logrus"
+
+	"github.com/natesales/openreactor/db"
 )
 
 var (

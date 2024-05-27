@@ -1,10 +1,11 @@
 package main
 
 import (
-	log "github.com/sirupsen/logrus"
-	"go.bug.st/serial"
 	"strconv"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
+	"go.bug.st/serial"
 
 	"github.com/natesales/openreactor/util"
 )

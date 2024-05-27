@@ -49,7 +49,7 @@ class DfrobotGP8403:
 
     def __init__(self, addr, sclpin, sdapin, i2cfreq, hard=False):
         """
-        Initilize the I2C bus.
+        Initialize the I2C bus.
         On Pico, Software I2C (using bit-banging) works on all output-capable pins
         :param addr: I2C address
         :param sclpin: SCL pin
