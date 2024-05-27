@@ -1,4 +1,12 @@
 services:
+  caddy:
+    image: caddy:2
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./ui:/public
+    ports:
+      - "80:80"
+
   gauge:
     image: openreactor/gauge
     build:
@@ -6,9 +14,9 @@ services:
       args:
       - SVC=gauge
     devices:
-      - /dev/ttyACM0:/gauge
+      - /dev/ttyACM1:/gauge
     ports:
-      - 8080:80
+      - "8080:80"
 
   turbo:
     image: openreactor/turbo
@@ -19,7 +27,7 @@ services:
     devices:
       - /dev/ttyS1:/pump
     ports:
-      - 8081:80
+      - "8081:80"
 
   mfc:
     image: openreactor/mfc
@@ -30,4 +38,15 @@ services:
     devices:
       - /dev/ttyUSB0:/mfc
     ports:
-      - 8082:80
+      - "8082:80"
+
+  hv:
+    image: openreactor/hv
+    build:
+      context: .
+      args:
+      - SVC=hv
+    devices:
+      - /dev/ttyUSB1:/hv
+    ports:
+      - "8083:80"

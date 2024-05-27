@@ -1,0 +1,20 @@
+:80 {
+    header Access-Control-Allow-Origin "https://*.westland.as34553.net"
+    header Access-Control-Allow-Credentials "true"
+
+    handle_path / {
+        reverse_proxy ui
+    }
+    handle_path /gauge/* {
+        reverse_proxy gauge
+    }
+    handle_path /turbo/* {
+        reverse_proxy turbo
+    }
+    handle_path /mfc/* {
+        reverse_proxy mfc
+    }
+    handle_path /hv/* {
+        reverse_proxy hv
+    }
+}
