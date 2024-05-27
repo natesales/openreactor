@@ -1,10 +1,7 @@
 .idea/
 __pycache__/
 openreactor
-turbod
-mfcd
-gauged
-hvd
+svc-*
 coprocs/venv
 tts/voice.onnx
 tts/voice.onnx.json

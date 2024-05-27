@@ -1,16 +1,19 @@
 set positional-arguments
 
+clean:
+    rm -rf svc-*
+
 sync:
     rsync -raz --exclude venv --exclude .idea --progress . reactor:~/openreactor/
 
 build component:
-    rm -rf {{component}}d
-    go build -o {{component}}d ./cmd/{{component}}
+    rm -rf svc-{{component}}
+    go build -o svc-{{component}} ./cmd/{{component}}
 
 exec component *args="":
     #!/bin/bash
     just build {{component}}
-    sudo ./{{component}}d ${@:2}
+    sudo ./svc-{{component}} ${@:2}
 
 turbo-on:
     docker compose exec -it turbo curl localhost:80/turbo/on
