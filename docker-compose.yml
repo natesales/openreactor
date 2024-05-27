@@ -54,11 +54,13 @@ services:
   tts:
     image: openreactor/tts
     build:
-      context: tts/server
+      context: .
+      args:
+      - SVC=tts
     volumes:
-      - ./tts/voice.onnx:/voice.onnx
-      - ./tts/voice.onnx.json:/voice.onnx.json
-      - ./tts/piper/:/piper/
+      - ./cmd/tts/voice.onnx:/voice.onnx
+      - ./cmd/tts/voice.onnx.json:/voice.onnx.json
+      - ./cmd/tts/piper/:/piper/
     ports:
       - "8084:80"
 

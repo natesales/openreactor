@@ -12,9 +12,9 @@ import (
 )
 
 var (
-	listenAddr = flag.String("l", ":8084", "server listen address")
-	piperBin   = flag.String("p", "./tts/piper/piper", "path to piper binary")
-	voiceModel = flag.String("m", "./tts/voice.onnx", "path to voice model")
+	listenAddr = flag.String("l", ":80", "server listen address")
+	piperBin   = flag.String("p", "/piper/piper", "path to piper binary")
+	voiceModel = flag.String("m", "/voice.onnx", "path to voice model")
 	verbose    = flag.Bool("v", false, "verbose logging")
 )
 
