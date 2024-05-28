@@ -3,12 +3,18 @@ set positional-arguments
 clean:
     rm -rf svc-*
 
-sync:
-    rsync -raz --exclude venv --exclude .idea --progress . reactor:~/openreactor/
-
 build component:
     rm -rf svc-{{component}}
-    go build -o svc-{{component}} ./cmd/{{component}}
+    CGO_ENABLED=0 go build -o svc-{{component}} ./cmd/{{component}}
+    docker compose build {{component}}
+    docker compose up -d {{component}}
+
+build-all:
+    #!/bin/bash
+    for f in cmd/*; do
+        f=$(echo $f | sed 's/cmd\///')
+        just build $f
+    done
 
 exec component *args="":
     #!/bin/bash
