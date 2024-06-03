@@ -1,13 +1,7 @@
-FROM golang:1.21
-
-WORKDIR /app
-COPY go.mod go.sum ./
-RUN go mod download
-
-COPY . ./
+FROM debian:bullseye
 
 ARG SVC
-RUN cd cmd/$SVC && go build -o /svc
+COPY svc-$SVC /svc
 
 EXPOSE 80
 

@@ -1,5 +1,5 @@
 export function apiCall(s) {
-    let route = "https://ctl-reactor.westland.as34553.net" + s
+    let route = `http://${window.location.host}${s}`
     console.log(route)
     fetch(route)
 }

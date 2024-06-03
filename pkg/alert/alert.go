@@ -16,7 +16,9 @@ func send(msg, path string) error {
 	}
 
 	u.Path = path
-	u.Query().Set("msg", msg)
+	query := u.Query()
+	query.Set("msg", msg)
+	u.RawQuery = query.Encode()
 
 	_, err = http.Post(u.String(), "text/plain", nil)
 	return err
