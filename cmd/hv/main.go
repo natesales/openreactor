@@ -3,13 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/natesales/openreactor/pkg/alert"
 	"net/http"
 	"strconv"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/natesales/openreactor/pkg/alert"
 	"github.com/natesales/openreactor/pkg/db"
 )
 
@@ -39,12 +39,6 @@ func main() {
 	if err := c.Connect(); err != nil {
 		log.Fatal(err)
 	}
-
-	resp, err := c.sendMessage("2.03")
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Info(resp)
 
 	// ver, err := m.Version()
 	// if err != nil {
