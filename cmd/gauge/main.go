@@ -27,7 +27,7 @@ func main() {
 
 	g := Controller{
 		Port: *serialPort,
-		LUT:  EdwardsAimS,
+		LUT:  EdwardsAPGL,
 	}
 	log.Infof("Connecting to gauge on %s", g.Port)
 	if err := g.Connect(); err != nil {
