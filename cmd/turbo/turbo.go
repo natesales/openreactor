@@ -4,80 +4,45 @@ import (
 	"context"
 	"fmt"
 	"strings"
-	"sync"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 	"go.bug.st/serial"
 )
 
-type Controller struct {
-	Port string
-	Addr int
+const addr = 1
 
-	p    serial.Port
-	lock sync.Mutex
-}
-
-// Connect connects to the serial port
-func (c *Controller) Connect() error {
-	mode := &serial.Mode{
-		BaudRate: 9600,
-		Parity:   serial.NoParity,
-		StopBits: serial.OneStopBit,
-	}
-	var err error
-	c.p, err = serial.Open(c.Port, mode)
-	return err
-}
-
-// Close closes the serial port
-func (c *Controller) Close() error {
-	return c.p.Close()
-}
-
-// Reconnect closes and reopens the serial port
-func (c *Controller) Reconnect() error {
-	if err := c.Close(); err != nil {
-		return err
-	}
-	return c.Connect()
-}
-
-func (c *Controller) sendMessage(message string) error {
-	c.lock.Lock()
-	_, err := c.p.Write([]byte(message + cksum(message) + "\r"))
-	c.lock.Unlock()
-	return err
+func (t *TCP015) sendMessage(message string) error {
+	return t.Write([]byte(message + cksum(message) + "\r"))
 }
 
 // WriteRegister writes a string payload to a register
-func (c *Controller) WriteRegister(register int, payload string) error {
-	command := zeroPad(c.Addr, 3)
+func (t *TCP015) WriteRegister(register int, payload string) error {
+	command := zeroPad(addr, 3)
 	command += "10"
 	command += zeroPad(register, 3)
 	command += zeroPad(len(payload), 2)
 	command += payload
-	return c.sendMessage(command)
+	return t.sendMessage(command)
 }
 
 // SetRegister sets a boolean register state
-func (c *Controller) SetRegister(register int, state bool) error {
+func (t *TCP015) SetRegister(register int, state bool) error {
 	var payload string
 	if state {
 		payload = "1"
 	} else {
 		payload = "0"
 	}
-	return c.WriteRegister(register, strings.Repeat(payload, 6))
+	return t.WriteRegister(register, strings.Repeat(payload, 6))
 }
 
 // ReadRegister reads a value at a register and returns a corresponding Message
-func (c *Controller) ReadRegister(register int) (*Message, error) {
+func (t *TCP015) ReadRegister(register int) (*Message, error) {
 	// Send query message
-	if err := c.sendMessage(
+	if err := t.sendMessage(
 		fmt.Sprintf("%s00%s02=?",
-			zeroPad(c.Addr, 3),
+			zeroPad(addr, 3),
 			zeroPad(register, 3),
 		),
 	); err != nil {
@@ -88,13 +53,13 @@ func (c *Controller) ReadRegister(register int) (*Message, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
 	defer cancel()
 
-	c.lock.Lock()
-	defer c.lock.Unlock()
-	go read(c.p, ch)
+	t.Lock.Lock()
+	defer t.Lock.Unlock()
+	go read(t.P, ch)
 
 	select {
 	case <-ctx.Done():
-		if err := c.Reconnect(); err != nil {
+		if err := t.Reconnect(); err != nil {
 			return nil, fmt.Errorf("could not reconnect: %v", err)
 		}
 		return nil, ctx.Err()

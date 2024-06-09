@@ -7,6 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/natesales/openreactor/pkg/db"
+	"github.com/natesales/openreactor/pkg/serial"
 )
 
 var (
@@ -25,11 +26,10 @@ func main() {
 		log.SetLevel(log.TraceLevel)
 	}
 
-	g := Controller{
-		Port: *serialPort,
+	g := Gauge{
+		Port: serial.New(*serialPort, 115200),
 		LUT:  EdwardsAimS,
 	}
-	log.Infof("Connecting to gauge on %s", g.Port)
 	if err := g.Connect(); err != nil {
 		log.Fatal(err)
 	}

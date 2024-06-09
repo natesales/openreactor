@@ -11,6 +11,7 @@ import (
 
 	"github.com/natesales/openreactor/pkg/alert"
 	"github.com/natesales/openreactor/pkg/db"
+	"github.com/natesales/openreactor/pkg/serial"
 )
 
 var (
@@ -20,6 +21,10 @@ var (
 	verbose      = flag.Bool("v", false, "Enable verbose logging")
 	trace        = flag.Bool("trace", false, "Enable trace logging")
 )
+
+func encode(msg string) []byte {
+	return append([]byte(msg), ';', '\r')
+}
 
 func main() {
 	flag.Parse()
@@ -32,9 +37,8 @@ func main() {
 		log.Trace("Trace logging enabled")
 	}
 
-	c := Controller{
-		Port: *serialPort,
-	}
+	c := serial.New(*serialPort, 115200)
+	// t := TCP015{serial.New(*serialPort, 115200)}
 	log.Infof("Connecting to HV controller on %s", c.Port)
 	if err := c.Connect(); err != nil {
 		log.Fatal(err)
@@ -57,7 +61,7 @@ func main() {
 			alert.Alert(fmt.Sprintf("Setting voltage to %.4f", v))
 		}
 		log.Infof("Setting voltage to %f", v)
-		resp, err := c.sendMessage(fmt.Sprintf("%f", v))
+		resp, err := c.Send(encode(fmt.Sprintf("%f", v)))
 		if err != nil {
 			w.Write([]byte(fmt.Sprintf("error setting voltage: %v", err)))
 			return

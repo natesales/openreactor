@@ -11,6 +11,7 @@ import (
 
 	"github.com/natesales/openreactor/pkg/alert"
 	"github.com/natesales/openreactor/pkg/db"
+	"github.com/natesales/openreactor/pkg/serial"
 )
 
 var (
@@ -32,15 +33,12 @@ func main() {
 		log.Trace("Trace logging enabled")
 	}
 
-	m := Controller{
-		Port: *serialPort,
-	}
-	log.Infof("Connecting to MFC on %s", m.Port)
-	if err := m.Connect(); err != nil {
+	s := SmartTrak{serial.New(*serialPort, 9600)}
+	if err := s.Connect(); err != nil {
 		log.Fatal(err)
 	}
 
-	ver, err := m.Version()
+	ver, err := s.Version()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -57,7 +55,7 @@ func main() {
 			alert.Alert(fmt.Sprintf("Setting flow rate to %.4f", slpm))
 		}
 		log.Infof("Setting flow rate to %f", slpm)
-		if err := m.SetFlowRate(slpm); err != nil {
+		if err := s.SetFlowRate(slpm); err != nil {
 			w.Write([]byte(fmt.Sprintf("error setting flow rate: %v", err)))
 			return
 		}
@@ -70,7 +68,7 @@ func main() {
 	log.Infof("Starting metrics reporter every %s", *pushInterval)
 	ticker := time.NewTicker(*pushInterval)
 	for ; true; <-ticker.C {
-		flow, err := m.GetFlowRate()
+		flow, err := s.GetFlowRate()
 		if err != nil {
 			log.Warnf("getting flow rate: %v", err)
 			continue
@@ -81,7 +79,7 @@ func main() {
 			continue
 		}
 
-		setPoint, err := m.SetPoint()
+		setPoint, err := s.SetPoint()
 		if err != nil {
 			log.Warnf("getting setpoint: %v", err)
 			continue

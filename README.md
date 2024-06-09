@@ -8,9 +8,10 @@ Each hardware component of the reactor has an associated microservice to control
 
 - Prewriting
     - OpenReactor runs as a collection of microservices that interface with the hardware components of a reactor.
-      serial, and either report their 
+      serial, and either report their
     - How components interface with eachother
         - Each hardware component has either a RS232 or USB TTY serial interface that
+        - TODO: UDEV rules to avoid changing port identifiers
     - How humans interface with the system
         - `fusionctl`
     - How computers interface with the system
