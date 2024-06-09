@@ -2,12 +2,15 @@
 
 #define LED_PIN LED_BUILTIN
 #define TRIG_PIN 3
+#define ADC_PIN 26
 
 DFRobot_GP8403 dac(&Wire, 0x5F);
 
 void setup() {
   pinMode(LED_PIN, OUTPUT);
   pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ADC_PIN, INPUT);
+  analogReadResolution(12);
   digitalWrite(LED_PIN, LOW);
   digitalWrite(TRIG_PIN, LOW);
 
@@ -42,6 +45,11 @@ void loop() {
           dac.setDACOutVoltage(voltage, 0);
           Serial.printf("oks%d\n", voltage);
           digitalWrite(TRIG_PIN, LOW);
+        }
+        return;
+      case 'r':
+        {
+          Serial.println(float(analogRead(ADC_PIN)) / 100);
         }
         return;
       default:

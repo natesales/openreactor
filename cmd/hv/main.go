@@ -57,7 +57,7 @@ func main() {
 			alert.Alert(fmt.Sprintf("Setting voltage to %.4f", v))
 		}
 		log.Infof("Setting voltage to %f", v)
-		resp, err := c.sendMessage(fmt.Sprintf("%f", v))
+		resp, err := c.sendMessage(fmt.Sprintf("s%d", int(v*1000)))
 		if err != nil {
 			w.Write([]byte(fmt.Sprintf("error setting voltage: %v", err)))
 			return
@@ -74,26 +74,21 @@ func main() {
 	log.Infof("Starting metrics reporter every %s", *pushInterval)
 	ticker := time.NewTicker(*pushInterval)
 	for ; true; <-ticker.C {
-		// flow, err := m.GetFlowRate()
-		// if err != nil {
-		// 	log.Warnf("getting flow rate: %v", err)
-		// 	continue
-		// }
-		// log.Debugf("Flow rate: %f", flow)
-		// if err := db.Write("mfc_flow", nil, map[string]any{"slpm": flow}); err != nil {
-		// 	log.Warn(err)
-		// 	continue
-		// }
-
-		// setPoint, err := m.SetPoint()
-		// if err != nil {
-		// 	log.Warnf("getting setpoint: %v", err)
-		// 	continue
-		// }
-		// log.Debugf("Setpoint: %f", flow)
-		// if err := db.Write("mfc_setpoint", nil, map[string]any{"slpm": setPoint}); err != nil {
-		// 	log.Warn(err)
-		// 	continue
-		// }
+		v, err := c.sendMessage("r")
+		if err != nil {
+			log.Warnf("getting voltage: %v", err)
+			continue
+		}
+		voltage, err := strconv.ParseFloat(v, 64)
+		if err != nil {
+			log.Warnf("parsing voltage %s: %v", v, err)
+			continue
+		}
+		voltage *= 1000
+		log.Debugf("Voltage: %f", voltage)
+		if err := db.Write("hv_voltage", nil, map[string]any{"v": voltage}); err != nil {
+			log.Warn(err)
+			continue
+		}
 	}
 }
