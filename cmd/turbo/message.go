@@ -24,7 +24,7 @@ func toInt(s string) int {
 	return i
 }
 
-// FromString parses a string as a messages, returning an error if the checksum is incorrect
+// FromString parses a string as a message, returning an error if the checksum is incorrect
 func (m *Message) FromString(s string) error {
 	if len(s) < 10 {
 		return fmt.Errorf("invalid message: %s", s)

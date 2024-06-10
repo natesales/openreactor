@@ -2,29 +2,26 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
+
+	"github.com/natesales/openreactor/pkg/serial"
 )
 
+type TCP015 struct{ *serial.Port }
+
 // Off turns the pump off
-func (c *Controller) Off() error {
-	return c.SetRegister(10, true)
+func (t *TCP015) Off() error {
+	return t.SetRegister(10, true)
 }
 
 // On turns the pump on
-func (c *Controller) On() error {
-	return c.SetRegister(10, false)
-}
-
-// Standby puts the pump in standby mode
-func (c *Controller) Standby() error {
-	// TODO
-	panic("not implemented")
+func (t *TCP015) On() error {
+	return t.SetRegister(10, false)
 }
 
 // IsRunning returns true if the pump is running
-func (c *Controller) IsRunning() (bool, error) {
-	message, err := c.ReadRegister(10)
+func (t *TCP015) IsRunning() (bool, error) {
+	message, err := t.ReadRegister(10)
 	if err != nil {
 		return false, err
 	}
@@ -32,12 +29,11 @@ func (c *Controller) IsRunning() (bool, error) {
 }
 
 // Hz returns the current motor speed
-func (c *Controller) Hz() (int, error) {
-	message, err := c.ReadRegister(309)
+func (t *TCP015) Hz() (int, error) {
+	hz, err := t.ReadInt(309)
 	if err != nil {
 		return 0, err
 	}
-	hz := toInt(message.Payload)
 	if hz == 111111 {
 		return 0, fmt.Errorf("invalid motor speed")
 	}
@@ -45,13 +41,8 @@ func (c *Controller) Hz() (int, error) {
 }
 
 // CurrentDraw returns the current motor current draw
-func (c *Controller) CurrentDraw() (float64, error) {
-	message, err := c.ReadRegister(310)
-	if err != nil {
-		return 0, err
-	}
-
-	f, err := strconv.ParseFloat(message.Payload, 32)
+func (t *TCP015) CurrentDraw() (float64, error) {
+	f, err := t.ReadFloat(310)
 	if err != nil {
 		return 0, err
 	}
@@ -60,8 +51,8 @@ func (c *Controller) CurrentDraw() (float64, error) {
 }
 
 // FirmwareVersion returns the firmware version
-func (c *Controller) FirmwareVersion() (string, error) {
-	message, err := c.ReadRegister(312)
+func (t *TCP015) FirmwareVersion() (string, error) {
+	message, err := t.ReadRegister(312)
 	if err != nil {
 		return "", err
 	}
@@ -69,8 +60,8 @@ func (c *Controller) FirmwareVersion() (string, error) {
 }
 
 // ErrorCode returns the current error code
-func (c *Controller) ErrorCode() (string, error) {
-	message, err := c.ReadRegister(303)
+func (t *TCP015) ErrorCode() (string, error) {
+	message, err := t.ReadRegister(303)
 	if err != nil {
 		return "", err
 	}

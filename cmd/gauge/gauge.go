@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
-	"go.bug.st/serial"
 
+	"github.com/natesales/openreactor/pkg/serial"
 	"github.com/natesales/openreactor/pkg/util"
 )
 
@@ -107,50 +107,24 @@ var EdwardsAimS = []util.Point{
 	{10.0, 7.5e-3},
 }
 
-type Controller struct {
-	Port string
-	LUT  []util.Point
+type Gauge struct {
+	*serial.Port
+	LUT []util.Point
 
 	last float64
-	p    serial.Port
 }
 
-// Connect connects to the serial port
-func (c *Controller) Connect() error {
-	mode := &serial.Mode{
-		BaudRate: 9600,
-		Parity:   serial.NoParity,
-		StopBits: serial.OneStopBit,
-	}
-	var err error
-	c.p, err = serial.Open(c.Port, mode)
-	return err
-}
-
-// Close closes the serial port
-func (c *Controller) Close() error {
-	return c.p.Close()
-}
-
-// Reconnect closes and reopens the serial port
-func (c *Controller) Reconnect() error {
-	if err := c.Close(); err != nil {
-		return err
-	}
-	return c.Connect()
-}
-
-func (c *Controller) Ok() bool {
-	return c.last > 0
+func (g *Gauge) Ok() bool {
+	return g.last > 0
 }
 
 // Stream streams gauge data into the database
-func (c *Controller) Stream(report func(voltage, torr float64)) {
+func (g *Gauge) Stream(report func(voltage, torr float64)) {
 	buf := make([]byte, 0)
 
 	for {
 		b := make([]byte, 1)
-		_, err := c.p.Read(b)
+		_, err := g.Read(b)
 		if err != nil {
 			log.Warnf("reading from gauge serial port: %v", err)
 			continue
@@ -162,11 +136,11 @@ func (c *Controller) Stream(report func(voltage, torr float64)) {
 			if err != nil {
 				log.Warnf("parsing float: %v", err)
 			}
-			torr := util.Interpolate(voltage, c.LUT)
+			torr := util.Interpolate(voltage, g.LUT)
 
 			log.Debugf("%.2fV %.2e torr", voltage, torr)
 			report(voltage, torr)
-			c.last = voltage
+			g.last = voltage
 
 			buf = make([]byte, 0)
 		} else {
