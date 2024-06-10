@@ -25,14 +25,14 @@ type Service struct {
 
 func New(baud int) *Service {
 	var (
-		serialPort   = flag.String("s", "", "Serial port")
+		serialPort   = flag.String("s", "/serial", "Serial port")
 		listenAddr   = flag.String("l", ":80", "API listen address")
 		pollInterval = flag.Duration("i", 1*time.Second, "Poll interval")
 		verbose      = flag.Bool("v", false, "Enable verbose logging")
 		trace        = flag.Bool("vv", false, "Enable trace logging")
 	)
 
-	// Parse name from s[0]
+	// Parse name from binary name
 	nameParts := strings.Split(os.Args[0], "/")
 	s := nameParts[len(nameParts)-1]
 	logger := logrus.WithField("svc", s)

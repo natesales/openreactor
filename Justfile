@@ -4,6 +4,7 @@ clean:
     rm -rf svc-*
 
 build component:
+    go run gensvc.go
     rm -rf svc-{{component}}
     CGO_ENABLED=0 go build -o svc-{{component}} ./cmd/{{component}}
     docker compose build {{component}}

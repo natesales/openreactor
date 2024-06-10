@@ -1,0 +1,6 @@
+ports:
+  gauge: /dev/ttyACM0
+  turbo: /dev/ttyS1
+  mfc: /dev/ttyUSB0
+  hv: /dev/ttyUSB1
+  counter: /dev/ttyUSB4
