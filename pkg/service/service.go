@@ -22,11 +22,7 @@ type Service struct {
 	Log          *logrus.Entry
 }
 
-type Subsystem interface {
-	*serial.Port
-}
-
-func New[T Subsystem](ss *T) *Service {
+func New(baud int) *Service {
 	var (
 		serialPort   = flag.String("s", "", "Serial port")
 		listenAddr   = flag.String("l", ":80", "API listen address")
@@ -43,30 +39,37 @@ func New[T Subsystem](ss *T) *Service {
 		logrus.SetLevel(logrus.TraceLevel)
 	}
 
+	// Connect to serial port
+	p := serial.New(*serialPort, baud)
+	if err := p.Connect(); err != nil {
+		logrus.Fatalf("serial connect: %s", err)
+	}
+
 	return &Service{
-		SerialPort:   serial.New(*serialPort),
+		SerialPort:   p,
 		pollFunc:     nil,
 		pollInterval: *pollInterval,
 		app: fiber.New(fiber.Config{
 			DisableStartupMessage: true,
 		}),
 		listenAddr: *listenAddr,
-		log:        logrus.WithField("svc", os.Args[0]), // TODO: Maybe get service name elsewhere
+		Log:        logrus.WithField("svc", os.Args[0]), // TODO: Maybe get service name elsewhere
 	}
 }
 
+// Start starts the metrics poller and API server
 func (s *Service) Start() {
 	ticker := time.NewTicker(s.pollInterval)
 	go func() {
 		for ; true; <-ticker.C {
 			if err := s.pollFunc(); err != nil {
-				s.log.Warnf("polling: %s", err)
+				s.Log.Warnf("polling: %s", err)
 			}
 		}
 	}()
 
 	if err := s.app.Listen(s.listenAddr); err != nil {
-		s.log.Fatalf("app listen: %s", err)
+		s.Log.Fatalf("app listen: %s", err)
 	}
 }
 

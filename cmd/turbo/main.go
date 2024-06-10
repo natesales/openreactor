@@ -9,11 +9,8 @@ import (
 )
 
 func main() {
-	t := TCP015{}
-	svc := service.New(t)
-	if err := t.Connect(); err != nil {
-		svc.Log.Fatal(err)
-	}
+	svc := service.New(9600)
+	t := TCP015{svc.SerialPort}
 
 	fw, err := t.FirmwareVersion()
 	if err != nil {
@@ -48,9 +45,7 @@ func main() {
 			isRunningInt = 1
 		}
 
-		if err := db.Write("turbo_running", nil, map[string]any{"running": isRunningInt}); err != nil {
-			return err
-		}
+		return db.Write("turbo_running", nil, map[string]any{"running": isRunningInt})
 	})
 
 	http.HandleFunc("/on", func(w http.ResponseWriter, r *http.Request) {
