@@ -45,6 +45,10 @@ func New(baud int) *Service {
 		logrus.SetLevel(logrus.TraceLevel)
 	}
 
+	if *serialPort == "" {
+		logger.Fatalf("required flag -s not provided")
+	}
+
 	// Connect to serial port
 	p := serial.New(*serialPort, baud)
 	logger.Infof("Connecting to %s", *serialPort)
