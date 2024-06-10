@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -70,6 +71,26 @@ func (t *TCP015) ReadRegister(register int) (*Message, error) {
 		}
 		return &m, nil
 	}
+}
+
+// ReadFloat reads a float register
+func (t *TCP015) ReadFloat(register int) (float64, error) {
+	message, err := t.ReadRegister(register)
+	if err != nil {
+		return 0, err
+	}
+
+	return strconv.ParseFloat(message.Payload, 64)
+}
+
+// ReadInt reads a int register
+func (t *TCP015) ReadInt(register int) (int, error) {
+	message, err := t.ReadRegister(register)
+	if err != nil {
+		return 0, err
+	}
+
+	return strconv.Atoi(message.Payload)
 }
 
 func read(port serial.Port, ch chan string) {
