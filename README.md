@@ -17,6 +17,8 @@ Each hardware component of the reactor has an associated microservice to control
     - How computers interface with the system
         - API
 
+The `service` package manages configuration, polling, and control of each service.
+
 ### High Voltage Supply Controller
 
 ### Mass Flow Controller
