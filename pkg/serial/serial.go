@@ -31,7 +31,7 @@ func (p *Port) Connect() error {
 		StopBits: serial.OneStopBit,
 	}
 	var err error
-	log.Infof("Connecting to %s", p.Port)
+	log.Debugf("Connecting to %s", p.Port)
 	p.P, err = serial.Open(p.Port, mode)
 	return err
 }
