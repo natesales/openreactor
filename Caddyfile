@@ -14,6 +14,9 @@
     handle_path /hv/* {
         reverse_proxy hv
     }
+    handle_path /counter/* {
+        reverse_proxy counter
+    }
     handle_path /alert/* {
         reverse_proxy alert
     }
