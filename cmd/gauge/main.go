@@ -26,9 +26,12 @@ func main() {
 		log.SetLevel(log.TraceLevel)
 	}
 
-	g := Gauge{
-		Port: serial.New(*serialPort, 115200),
-		LUT:  EdwardsAimS,
+	g, err := New(
+		serial.New(*serialPort, 115200),
+		"EdwardsAimS",
+	)
+	if err != nil {
+		log.Fatal(err)
 	}
 	if err := g.Connect(); err != nil {
 		log.Fatal(err)

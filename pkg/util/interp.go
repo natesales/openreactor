@@ -1,8 +1,26 @@
 package util
 
+import "fmt"
+
 // Point represents a 2D coordinate pair (x, y)
 type Point struct {
 	X, Y float64
+}
+
+func (p *Point) UnmarshalYAML(unmarshal func(any) error) error {
+	var temp []float64
+	if err := unmarshal(&temp); err != nil {
+		return err
+	}
+
+	if len(temp) != 2 {
+		return fmt.Errorf("expected 2 elements, got %d", len(temp))
+	}
+
+	p.X = temp[0]
+	p.Y = temp[1]
+
+	return nil
 }
 
 // linearInterpolation performs a linear interpolation between two points
