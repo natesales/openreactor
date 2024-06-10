@@ -14,7 +14,7 @@ void count() {
 
 void loop() {
   delay(period);
-  detachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN));  
+  detachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN));
   Serial.println(counts);
   counts = 0;
   attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), count, FALLING);
