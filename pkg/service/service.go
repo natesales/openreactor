@@ -3,6 +3,7 @@ package service
 import (
 	"flag"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -31,6 +32,11 @@ func New(baud int) *Service {
 		trace        = flag.Bool("vv", false, "Enable trace logging")
 	)
 
+	// Parse name from s[0]
+	nameParts := strings.Split(os.Args[0], "/")
+	s := nameParts[len(nameParts)-1]
+	logger := logrus.WithField("svc", s)
+
 	flag.Parse()
 	if *verbose {
 		logrus.SetLevel(logrus.DebugLevel)
@@ -41,8 +47,9 @@ func New(baud int) *Service {
 
 	// Connect to serial port
 	p := serial.New(*serialPort, baud)
+	logger.Infof("Connecting to %s", *serialPort)
 	if err := p.Connect(); err != nil {
-		logrus.Fatalf("serial connect: %s", err)
+		logger.Fatalf("serial connect: %s", err)
 	}
 
 	return &Service{
@@ -53,7 +60,7 @@ func New(baud int) *Service {
 			DisableStartupMessage: true,
 		}),
 		listenAddr: *listenAddr,
-		Log:        logrus.WithField("svc", os.Args[0]), // TODO: Maybe get service name elsewhere
+		Log:        logger,
 	}
 }
 
