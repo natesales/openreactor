@@ -53,8 +53,12 @@
                     break;
                 case "audioAlert":
                     addLog(data["text"]);
-                    if (!muted) {
-                        new Audio("/tts/audio?text=" + encodeURIComponent(data["text"])).play();
+                    if ('speechSynthesis' in window) {
+                        if (!muted) {
+                            window.speechSynthesis.speak(new SpeechSynthesisUtterance(data["text"]));
+                        }
+                    } else {
+                        addLog("Speech synthesis not supported");
                     }
                     break;
                 default:

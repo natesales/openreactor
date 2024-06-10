@@ -51,19 +51,6 @@ services:
     ports:
       - "8083:80"
 
-  tts:
-    image: openreactor/tts
-    build:
-      context: .
-      args:
-      - SVC=tts
-    volumes:
-      - ./cmd/tts/voice.onnx:/voice.onnx
-      - ./cmd/tts/voice.onnx.json:/voice.onnx.json
-      - ./cmd/tts/piper/:/piper/
-    ports:
-      - "8084:80"
-
   alert:
     image: openreactor/alert
     build:

@@ -3,6 +3,3 @@ __pycache__/
 openreactor
 svc-*
 coprocs/venv
-cmd/tts/voice.onnx
-cmd/tts/voice.onnx.json
-cmd/tts/piper/

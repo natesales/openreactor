@@ -14,9 +14,6 @@
     handle_path /hv/* {
         reverse_proxy hv
     }
-    handle_path /tts/* {
-        reverse_proxy tts
-    }
     handle_path /alert/* {
         reverse_proxy alert
     }
