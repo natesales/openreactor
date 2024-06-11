@@ -1,42 +1,20 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"net/http"
 	"strconv"
-	"time"
 
+	"github.com/gofiber/fiber/v2"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/natesales/openreactor/pkg/alert"
 	"github.com/natesales/openreactor/pkg/db"
-	"github.com/natesales/openreactor/pkg/serial"
-)
-
-var (
-	serialPort   = flag.String("s", "/mfc", "Serial port")
-	apiListen    = flag.String("l", ":80", "API listen address")
-	pushInterval = flag.Duration("i", 1*time.Second, "Metrics push interval")
-	verbose      = flag.Bool("v", false, "Enable verbose logging")
-	trace        = flag.Bool("trace", false, "Enable trace logging")
+	"github.com/natesales/openreactor/pkg/service"
 )
 
 func main() {
-	flag.Parse()
-	if *verbose {
-		log.SetLevel(log.DebugLevel)
-		log.Debug("Debug logging enabled")
-	}
-	if *trace {
-		log.SetLevel(log.TraceLevel)
-		log.Trace("Trace logging enabled")
-	}
-
-	s := SmartTrak{serial.New(*serialPort, 9600)}
-	if err := s.Connect(); err != nil {
-		log.Fatal(err)
-	}
+	svc := service.New(9600)
+	s := SmartTrak{svc.SerialPort}
 
 	ver, err := s.Version()
 	if err != nil {
@@ -44,10 +22,10 @@ func main() {
 	}
 	log.Infof("MFC version %s", ver)
 
-	http.HandleFunc("/set", func(w http.ResponseWriter, r *http.Request) {
-		slpm, err := strconv.ParseFloat(r.URL.Query().Get("slpm"), 64)
+	svc.App.Get("/set", func(c *fiber.Ctx) error {
+		slpm, err := strconv.ParseFloat(c.Query("slpm"), 64)
 		if err != nil {
-			w.Write([]byte(fmt.Sprintf("error parsing slpm URL param: %v", err)))
+			return c.SendString(fmt.Sprintf("error parsing slpm URL param: %v", err))
 		}
 		if slpm == 0 {
 			alert.Log("Closing MFC")
@@ -56,38 +34,32 @@ func main() {
 		}
 		log.Infof("Setting flow rate to %f", slpm)
 		if err := s.SetFlowRate(slpm); err != nil {
-			w.Write([]byte(fmt.Sprintf("error setting flow rate: %v", err)))
-			return
+			return c.SendString(fmt.Sprintf("error setting flow rate: %v", err))
 		}
-		w.Write([]byte("ok\n"))
+		return c.SendString("ok")
 	})
 
-	log.Infof("Starting API on %s", *apiListen)
-	go http.ListenAndServe(*apiListen, nil) // TODO: Error logging
-
-	log.Infof("Starting metrics reporter every %s", *pushInterval)
-	ticker := time.NewTicker(*pushInterval)
-	for ; true; <-ticker.C {
+	svc.SetPoller(func() error {
 		flow, err := s.GetFlowRate()
 		if err != nil {
-			log.Warnf("getting flow rate: %v", err)
-			continue
+			return fmt.Errorf("getting flow rate: %v", err)
 		}
 		log.Debugf("Flow rate: %f", flow)
 		if err := db.Write("mfc_flow", nil, map[string]any{"slpm": flow}); err != nil {
-			log.Warn(err)
-			continue
+			return err
 		}
 
 		setPoint, err := s.SetPoint()
 		if err != nil {
-			log.Warnf("getting setpoint: %v", err)
-			continue
+			return fmt.Errorf("getting setpoint: %v", err)
 		}
 		log.Debugf("Setpoint: %f", flow)
 		if err := db.Write("mfc_setpoint", nil, map[string]any{"slpm": setPoint}); err != nil {
-			log.Warn(err)
-			continue
+			return err
 		}
-	}
+
+		return nil
+	})
+
+	svc.Start()
 }

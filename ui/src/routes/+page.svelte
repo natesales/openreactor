@@ -97,9 +97,8 @@
     <div class="group">
         <h2>MFC</h2>
         <div>
-            <ActionButton icon={XMark} label="Close" action="/mfc/set?v=0"/>
+            <ActionButton icon={XMark} label="Close" action="/mfc/set?slpm=0"/>
             <SettableField label="Flow Rate Setpoint" prefix="/mfc/set?slpm="/>
-
         </div>
         <h3>Quick Actions (SLPM)</h3>
         <ButtonGroup prefix="/mfc/set?slpm=" options={[0.02, 0.05, 0.1, 0.2]}/>
