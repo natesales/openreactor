@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"os"
 
 	log "github.com/sirupsen/logrus"
@@ -55,7 +54,7 @@ func main() {
 				Args:    []string{"SVC=" + name},
 			},
 			Devices: []string{port + ":/serial"},
-			Ports:   []string{fmt.Sprintf("%d:80", 8080+i)},
+			// Ports:   []string{fmt.Sprintf("%d:80", 8080+i)},
 		}
 		log.Infof("Added service %s", name)
 		i++
