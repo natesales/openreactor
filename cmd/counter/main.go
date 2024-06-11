@@ -14,8 +14,8 @@ func main() {
 	svc := service.New(115200)
 
 	last := 0
-	svc.App.Get("/last", func(c *fiber.Ctx) error {
-		return c.SendString(strconv.Itoa(last))
+	svc.App.Get("/last", func(ctx *fiber.Ctx) error {
+		return ctx.SendString(strconv.Itoa(last))
 	})
 
 	go svc.Start()

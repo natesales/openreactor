@@ -22,10 +22,10 @@ func main() {
 	}
 	log.Infof("MFC version %s", ver)
 
-	svc.App.Get("/set", func(c *fiber.Ctx) error {
-		slpm, err := strconv.ParseFloat(c.Query("slpm"), 64)
+	svc.App.Get("/set", func(ctx *fiber.Ctx) error {
+		slpm, err := strconv.ParseFloat(ctx.Query("slpm"), 64)
 		if err != nil {
-			return c.SendString(fmt.Sprintf("error parsing slpm URL param: %v", err))
+			return ctx.SendString(fmt.Sprintf("error parsing slpm URL param: %v", err))
 		}
 		if slpm == 0 {
 			alert.Log("Closing MFC")
@@ -34,9 +34,9 @@ func main() {
 		}
 		log.Infof("Setting flow rate to %f", slpm)
 		if err := s.SetFlowRate(slpm); err != nil {
-			return c.SendString(fmt.Sprintf("error setting flow rate: %v", err))
+			return ctx.SendString(fmt.Sprintf("error setting flow rate: %v", err))
 		}
-		return c.SendString("ok")
+		return ctx.SendString("ok")
 	})
 
 	svc.SetPoller(func() error {
