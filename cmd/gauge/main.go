@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	serialPort = flag.String("s", "/gauge", "Gauge controller serial port")
+	serialPort = flag.String("s", "/serial", "Gauge controller serial port")
 	listen     = flag.String("l", ":80", "HTTP listen address")
 	verbose    = flag.Bool("v", false, "Enable verbose logging")
 	trace      = flag.Bool("trace", false, "Enable trace logging")

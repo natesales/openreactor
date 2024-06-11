@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	serialPort   = flag.String("s", "/hv", "Serial port")
+	serialPort   = flag.String("s", "/serial", "Serial port")
 	apiListen    = flag.String("l", ":80", "API listen address")
 	pushInterval = flag.Duration("i", 1*time.Second, "Metrics push interval")
 	verbose      = flag.Bool("v", false, "Enable verbose logging")
