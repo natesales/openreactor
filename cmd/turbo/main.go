@@ -1,8 +1,7 @@
 package main
 
 import (
-	"net/http"
-
+	"github.com/gofiber/fiber/v2"
 	"github.com/natesales/openreactor/pkg/alert"
 	"github.com/natesales/openreactor/pkg/db"
 	"github.com/natesales/openreactor/pkg/service"
@@ -48,19 +47,19 @@ func main() {
 		return db.Write("turbo_running", nil, map[string]any{"running": isRunningInt})
 	})
 
-	http.HandleFunc("/on", func(w http.ResponseWriter, r *http.Request) {
+	svc.App.Get("/on", func(c *fiber.Ctx) error {
 		alert.Alert("Starting turbo")
 		if err := t.On(); err != nil {
-			w.Write([]byte("Error: " + err.Error()))
+			return c.SendString("Error: " + err.Error())
 		}
-		w.Write([]byte("ok"))
+		return c.SendString("ok")
 	})
-	http.HandleFunc("/off", func(w http.ResponseWriter, r *http.Request) {
+	svc.App.Get("/off", func(c *fiber.Ctx) error {
 		alert.Log("Stopping turbo")
 		if err := t.Off(); err != nil {
-			w.Write([]byte("Error: " + err.Error()))
+			return c.SendString("Error: " + err.Error())
 		}
-		w.Write([]byte("ok"))
+		return c.SendString("ok")
 	})
 
 	svc.Start()
