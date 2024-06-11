@@ -15,12 +15,13 @@ import (
 type pollFunc func() error
 
 type Service struct {
-	SerialPort   *serial.Port
+	SerialPort *serial.Port
+	App        *fiber.App
+	Log        *logrus.Entry
+
+	listenAddr   string
 	pollFunc     pollFunc
 	pollInterval time.Duration
-	app          *fiber.App
-	listenAddr   string
-	Log          *logrus.Entry
 }
 
 func New(baud int) *Service {
@@ -57,14 +58,14 @@ func New(baud int) *Service {
 	}
 
 	return &Service{
-		SerialPort:   p,
-		pollFunc:     nil,
-		pollInterval: *pollInterval,
-		app: fiber.New(fiber.Config{
+		SerialPort: p,
+		Log:        logger,
+		App: fiber.New(fiber.Config{
 			DisableStartupMessage: true,
 		}),
-		listenAddr: *listenAddr,
-		Log:        logger,
+		pollFunc:     nil,
+		pollInterval: *pollInterval,
+		listenAddr:   *listenAddr,
 	}
 }
 
@@ -79,7 +80,7 @@ func (s *Service) Start() {
 		}
 	}()
 
-	if err := s.app.Listen(s.listenAddr); err != nil {
+	if err := s.App.Listen(s.listenAddr); err != nil {
 		s.Log.Fatalf("app listen: %s", err)
 	}
 }
