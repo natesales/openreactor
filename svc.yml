@@ -1,6 +1,6 @@
 ports:
-  gauge: /dev/ttyACM0
+  gauge: /dev/serial/by-id/usb-Raspberry_Pi_Pico_E660D05113218634-if00
   turbo: /dev/ttyS1
-  mfc: /dev/ttyUSB0
-  hv: /dev/ttyUSB1
-  counter: /dev/ttyUSB4
+  mfc: /dev/serial/by-id/usb-Keyspan__a_division_of_InnoSys_Inc._Keyspan_USA-19H-if00-port0
+  hv: /dev/serial/by-id/usb-Raspberry_Pi_Pico_E660D051132C6F2C-if00
+  # counter: /dev/ttyUSB4
