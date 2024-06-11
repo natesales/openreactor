@@ -1,9 +1,10 @@
 package main
 
 import (
-	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/gofiber/fiber/v2"
 
 	"github.com/natesales/openreactor/pkg/db"
 	"github.com/natesales/openreactor/pkg/service"
@@ -13,8 +14,8 @@ func main() {
 	svc := service.New(115200)
 
 	last := 0
-	http.HandleFunc("/last", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(strconv.Itoa(last)))
+	svc.App.Get("/last", func(c *fiber.Ctx) error {
+		return c.SendString(strconv.Itoa(last))
 	})
 
 	go svc.Start()
