@@ -10,6 +10,10 @@ build component:
     docker compose build {{component}}
     docker compose up -d {{component}}
 
+up:
+    go run gensvc.go
+    docker compose up -d --remove-orphans
+
 build-all:
     #!/bin/bash
     for f in cmd/*; do
