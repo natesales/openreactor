@@ -23,8 +23,6 @@ type SmartTrak struct {
 }
 
 func (s *SmartTrak) sendMessage(message string) (string, error) {
-	fmt.Println("Sending message " + message)
-
 	out, err := s.Send(append(
 		append([]byte(message), cksum(message)...),
 		'\r',
@@ -32,8 +30,6 @@ func (s *SmartTrak) sendMessage(message string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
-	fmt.Printf("Response %s\n", out)
 
 	response := out[:len(out)-2]
 	crc := out[len(out)-2:]
