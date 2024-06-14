@@ -10,8 +10,7 @@ build component:
     docker compose build {{component}}
     docker compose up -d {{component}}
 
-up:
-    go run gensvc.go
+up: clean ui build-all
     docker compose up -d --remove-orphans
 
 build-all:
@@ -25,6 +24,7 @@ exec component *args="":
     #!/bin/bash
     just build {{component}}
     sudo ./svc-{{component}} ${@:2}
+    rm -f ./svc-{{component}}
 
 logs svc:
     docker compose logs {{svc}}
