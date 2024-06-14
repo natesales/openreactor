@@ -71,14 +71,16 @@ func New(baud int) *Service {
 
 // Start starts the metrics poller and API server
 func (s *Service) Start() {
-	ticker := time.NewTicker(s.pollInterval)
-	go func() {
-		for ; true; <-ticker.C {
-			if err := s.pollFunc(); err != nil {
-				s.Log.Warnf("polling: %s", err)
+	if s.pollFunc != nil {
+		ticker := time.NewTicker(s.pollInterval)
+		go func() {
+			for ; true; <-ticker.C {
+				if err := s.pollFunc(); err != nil {
+					s.Log.Warnf("polling: %s", err)
+				}
 			}
-		}
-	}()
+		}()
+	}
 
 	if err := s.App.Listen(s.listenAddr); err != nil {
 		s.Log.Fatalf("app listen: %s", err)
