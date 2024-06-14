@@ -28,7 +28,7 @@ func New(baud int) *Service {
 	var (
 		serialPort   = flag.String("s", "/serial", "Serial port")
 		listenAddr   = flag.String("l", ":80", "API listen address")
-		pollInterval = flag.Duration("i", 1*time.Second, "Poll interval")
+		pollInterval = flag.Duration("i", 250*time.Millisecond, "Poll interval")
 		verbose      = flag.Bool("v", false, "Enable verbose logging")
 		trace        = flag.Bool("vv", false, "Enable trace logging")
 	)
