@@ -41,7 +41,7 @@ func exec(cmd string) (string, error) {
 }
 
 func readFloat(cmd string) (float64, error) {
-	resp, err := exec("PR1")
+	resp, err := exec(cmd)
 	if err != nil {
 		return -1, err
 	}
