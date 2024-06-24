@@ -13,6 +13,9 @@ type Line interface {
 
 	// String returns the string representation of the line
 	String() string
+
+	// UnmarshalYAML unmarshalls a line from a YAML node
+	UnmarshalYAML(func(any) error) error
 }
 
 var (
@@ -21,4 +24,12 @@ var (
 
 func normalize(s string) string {
 	return strings.ToLower(strings.ReplaceAll(s, " ", ""))
+}
+
+func unmarshal(l Line, u func(any) error) error {
+	var s string
+	if err := u(&s); err != nil {
+		return err
+	}
+	return l.Parse(s)
 }

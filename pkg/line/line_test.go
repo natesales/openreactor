@@ -4,9 +4,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/yaml.v3"
 )
 
-func TestLinearParse(t *testing.T) {
+func TestLinear_Parse(t *testing.T) {
 	for _, tc := range []struct {
 		in  string
 		out Linear
@@ -26,7 +27,7 @@ func TestLinearParse(t *testing.T) {
 	}
 }
 
-func TestLinearEval(t *testing.T) {
+func TestLinear_Eval(t *testing.T) {
 	l := Linear{-2, 3}
 	for x, y := range map[float64]float64{
 		0: 3,
@@ -35,4 +36,10 @@ func TestLinearEval(t *testing.T) {
 	} {
 		assert.Equal(t, y, l.Eval(x))
 	}
+}
+
+func TestLinear_UnmarshalYAML(t *testing.T) {
+	var l Linear
+	assert.Nil(t, yaml.Unmarshal([]byte("2x+3"), &l))
+	assert.Equal(t, Linear{2, 3}, l)
 }

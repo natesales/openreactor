@@ -41,3 +41,7 @@ func (l *Linear) Eval(x float64) float64 {
 func (l *Linear) String() string {
 	return fmt.Sprintf("%fx+%f", l.m, l.b)
 }
+
+func (l *Linear) UnmarshalYAML(u func(any) error) error {
+	return unmarshal(l, u)
+}
