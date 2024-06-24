@@ -19,4 +19,9 @@
     --form-text: #fff;
     --variable: #d941e2;
     --highlight: #ffffff;
+
+    /* Custom colors */
+    --green: #0dbd0d;
+    --red: red;
+    --blue: blue;
 }
