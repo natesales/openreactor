@@ -24,6 +24,12 @@ type Service struct {
 	pollInterval time.Duration
 }
 
+func NewApp() *fiber.App {
+	return fiber.New(fiber.Config{
+		DisableStartupMessage: true,
+	})
+}
+
 func New(baud int) *Service {
 	var (
 		serialPort   = flag.String("s", "/serial", "Serial port")
@@ -58,11 +64,9 @@ func New(baud int) *Service {
 	}
 
 	return &Service{
-		SerialPort: p,
-		Log:        logger,
-		App: fiber.New(fiber.Config{
-			DisableStartupMessage: true,
-		}),
+		SerialPort:   p,
+		Log:          logger,
+		App:          NewApp(),
 		pollFunc:     nil,
 		pollInterval: *pollInterval,
 		listenAddr:   *listenAddr,
