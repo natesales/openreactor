@@ -35,7 +35,12 @@ var profileGenerateCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println(string(y))
+		if err := os.WriteFile(file, y, 0644); err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Printf("Wrote default profile to %s\n", file)
 	},
 }
 

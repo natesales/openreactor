@@ -2,10 +2,12 @@ name: Default
 revision: "0"
 vacuum:
     turboRotorSpeed: 90000
-    startupHold: 15s
+    turboRotorStartupHold: 15s
+    lowVacuum: 0.01
+    targetVacuum: 1e-05
+    targetVacuumHold: 15s
 cathode:
     tripCurrent: 8
     delayedTripCurrent: 6
     delayedTripTime: 1s
     rampCurve: null
-

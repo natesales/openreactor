@@ -17,6 +17,6 @@ revision: 1
 
 	assert.Equal(t, "Test Profile", profile.Name)
 	assert.Equal(t, "1", profile.Revision)
-	assert.Equal(t, 90000, profile.Vacuum.TurboRotorSpeed)
-	assert.Equal(t, "15s", profile.Vacuum.StartupHold.String())
+	assert.Equal(t, 90000, profile.Vacuum.RotorSpeed)
+	assert.Equal(t, "15s", profile.Vacuum.RotorStartupHold.String())
 }
