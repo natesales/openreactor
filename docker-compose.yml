@@ -10,9 +10,9 @@ services:
     ports:
       - "80:80"
 
-  alert:
-    image: openreactor/alert
+  maestro:
+    image: openreactor-maestro
     build:
       context: .
       args:
-        - SVC=alert
+        - SVC=maestro

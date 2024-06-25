@@ -17,7 +17,7 @@
     handle_path /counter/* {
         reverse_proxy counter
     }
-    handle_path /alert/* {
-        reverse_proxy alert
+    handle_path /maestro/* {
+        reverse_proxy maestro
     }
 }

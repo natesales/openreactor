@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/natesales/openreactor/cmd/alert/fsm"
-	"github.com/natesales/openreactor/cmd/alert/ws"
+	"github.com/natesales/openreactor/cmd/maestro/fsm"
+	"github.com/natesales/openreactor/cmd/maestro/ws"
 )
 
 func registerStateHandlers(app *fiber.App) {
@@ -17,8 +17,9 @@ func registerStateHandlers(app *fiber.App) {
 
 	app.Get("/states", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
-			"active": fsm.Get(),
-			"states": fsm.States,
+			"active":      fsm.Get(),
+			"states":      fsm.States,
+			"errorStates": fsm.ErrorStates,
 		})
 	})
 
@@ -39,6 +40,11 @@ func registerStateHandlers(app *fiber.App) {
 
 	ws.HandleFunc("fsmReset", func(msg string) error {
 		fsm.Reset()
+		return nil
+	})
+
+	ws.HandleFunc("fsmSet", func(msg string) error {
+		fsm.Set(fsm.State(msg))
 		return nil
 	})
 }

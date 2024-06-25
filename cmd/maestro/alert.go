@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/natesales/openreactor/cmd/alert/ws"
+	"github.com/natesales/openreactor/cmd/maestro/ws"
 )
 
 func registerAlertHandlers(app *fiber.App) {
