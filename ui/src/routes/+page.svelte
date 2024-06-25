@@ -19,8 +19,11 @@
     import IconToggle from "$lib/IconToggle.svelte";
     import Logs from "$lib/Logs.svelte";
     import ConnectionChip from "$lib/ConnectionChip.svelte";
+    import StepperGroup from "$lib/StepperGroup.svelte";
+    import {wsURL} from "$lib/api";
 
     let muted = false;
+    let refreshStepper;
 
     function eStop() {
         apiCall("/hv/set?v=0");
@@ -47,7 +50,7 @@
         };
         ws.onmessage = (event) => {
             let data = JSON.parse(event.data);
-            switch (data["type"]) {
+            switch (data["name"]) {
                 case "logMessage":
                     addLog(data["message"]);
                     break;
@@ -61,8 +64,14 @@
                         addLog("Speech synthesis not supported");
                     }
                     break;
+                case "fsmStateChange":
+                    if(data["state"]) {
+                        addLog("FSM state changed to " + data["state"]);
+                    }
+                    refreshStepper();
+                    break;
                 default:
-                    addLog("Unknown message type: " + data["type"]);
+                    addLog("Unknown message type: " + data["name"]);
             }
         };
     }
@@ -78,12 +87,31 @@
 
 <ActionButton danger wide icon={ExclamationTriangle} label="Emergency Stop" action={eStop}/>
 
-<div class="row">
-    <IconToggle onIcon={SpeakerXMark} offIcon={SpeakerWave} bind:value={muted}/>
-    <ConnectionChip connected={wsConnected}/>
+<div class="section">
+    <div class="row">
+        <IconToggle onIcon={SpeakerXMark} offIcon={SpeakerWave} bind:value={muted}/>
+        <ActionButton icon={ExclamationTriangle} label="FSM Next" action={() => {
+            ws.send(JSON.stringify({
+                name: "fsmNext"
+            }))
+        }}/>
+        <ActionButton icon={ExclamationTriangle} label="Reset" action={() => {
+            ws.send(JSON.stringify({
+                name: "fsmReset"
+            }))
+        }}/>
+        <ActionButton icon={ExclamationTriangle} label="Error" action={() => {
+            ws.send(JSON.stringify({
+                name: "fsmToggleError"
+            }))
+        }}/>
+        <ConnectionChip connected={wsConnected}/>
+    </div>
+
+    <StepperGroup bind:refresh={refreshStepper}/>
 </div>
 
-<div class="row">
+<div class="row section">
     <div class="group">
         <h2>HV</h2>
         <div>
@@ -91,7 +119,7 @@
             <SettableField label="Voltage Setpoint" prefix="/hv/set?v="/>
         </div>
         <h3>Quick Actions (x10 kV)</h3>
-        <ButtonGroup prefix="/hv/set?v=" options={[0.5, 1, 1.5, 2, 2.25]}/>
+        <ButtonGroup prefix="/hv/set?v=" options={[0.5, 1, 1.75, 2.25, 3.75]}/>
     </div>
 
     <div class="group">
@@ -105,7 +133,7 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row section">
     <div class="group">
         <h2>Turbo Pump</h2>
         <ActionButton icon={Power} label="On" action="/turbo/on"/>
@@ -123,6 +151,9 @@
         align-items: center;
         justify-content: space-between;
         padding-bottom: 20px;
+    }
+
+    .section {
         border-bottom: 1px solid var(--border);
     }
 

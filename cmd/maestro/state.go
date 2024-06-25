@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/natesales/openreactor/cmd/maestro/fsm"
@@ -20,6 +22,7 @@ func registerStateHandlers(app *fiber.App) {
 			"active":      fsm.Get(),
 			"states":      fsm.States,
 			"errorStates": fsm.ErrorStates,
+			"errors":      fsm.Errors(),
 		})
 	})
 
@@ -40,11 +43,19 @@ func registerStateHandlers(app *fiber.App) {
 
 	ws.HandleFunc("fsmReset", func(msg string) error {
 		fsm.Reset()
+		fsm.ClearErrors()
 		return nil
 	})
 
-	ws.HandleFunc("fsmSet", func(msg string) error {
-		fsm.Set(fsm.State(msg))
+	ws.HandleFunc("fsmToggleError", func(msg string) error {
+		if len(fsm.Errors()) > 0 {
+			fsm.ClearErrors()
+		} else {
+			fsm.SetError(fsm.OverCurrent)
+		}
+
+		fmt.Println(fsm.Errors())
+
 		return nil
 	})
 }

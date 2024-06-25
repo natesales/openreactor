@@ -36,7 +36,7 @@ func Get() State {
 // Set sets the current state
 func Set(s State) {
 	current = s
-	reportChange()
+	reportChange(current)
 }
 
 // Reset moves the state machine back to the initial state
@@ -61,25 +61,33 @@ func AddCallback(cb func(State)) {
 	callbacks = append(callbacks, cb)
 }
 
-func reportChange() {
+func reportChange(s State) {
 	for _, cb := range callbacks {
-		cb(current)
+		cb(s)
 	}
 }
 
 // SetError sets the error state
 func SetError(s State) {
 	ErrorConditions[s] = true
+	reportChange("")
 }
 
 // ClearError clears the error state
 func ClearError(s State) {
 	delete(ErrorConditions, s)
+	reportChange("")
+}
+
+// ClearErrors clears all error states
+func ClearErrors() {
+	ErrorConditions = map[State]bool{}
+	reportChange("")
 }
 
 // Errors returns the current error states
 func Errors() []State {
-	var errs []State
+	errs := make([]State, 0)
 	for s := range ErrorConditions {
 		errs = append(errs, s)
 	}
