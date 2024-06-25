@@ -1,52 +1,34 @@
 package main
 
 import (
-	"flag"
-	"net/http"
-
+	"github.com/gofiber/fiber/v2"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/natesales/openreactor/pkg/db"
-	"github.com/natesales/openreactor/pkg/serial"
-)
-
-var (
-	serialPort = flag.String("s", "/serial", "Gauge controller serial port")
-	listen     = flag.String("l", ":80", "HTTP listen address")
-	verbose    = flag.Bool("v", false, "Enable verbose logging")
-	trace      = flag.Bool("trace", false, "Enable trace logging")
+	"github.com/natesales/openreactor/pkg/service"
 )
 
 func main() {
-	flag.Parse()
-	if *verbose {
-		log.SetLevel(log.DebugLevel)
-	}
-	if *trace {
-		log.SetLevel(log.TraceLevel)
-	}
+	svc := service.New(115200)
 
+	// Create gauge
 	g, err := New(
-		serial.New(*serialPort, 115200),
+		svc.SerialPort,
 		"EdwardsAimS",
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := g.Connect(); err != nil {
-		log.Fatal(err)
-	}
 
-	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+	svc.App.Get("/health", func(ctx *fiber.Ctx) error {
 		if g.Ok() {
-			w.Write([]byte("ok"))
+			return ctx.SendString("ok")
 		} else {
-			w.WriteHeader(500)
-			w.Write([]byte("fail"))
+			return ctx.Status(500).SendString("fail")
 		}
 	})
-	log.Infof("Starting API on %s", *listen)
-	go http.ListenAndServe(*listen, nil)
+
+	go svc.Start()
 
 	log.Info("Starting gauge streamer")
 	g.Stream(func(voltage, torr float64) {
