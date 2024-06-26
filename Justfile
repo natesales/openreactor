@@ -13,7 +13,7 @@ build component:
 up: clean ui build-all
     docker compose up -d --remove-orphans
 
-build-all:
+build-all: ui
     #!/bin/bash
     for f in cmd/*; do
         f=$(echo $f | sed 's/cmd\///')
