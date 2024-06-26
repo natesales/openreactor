@@ -6,4 +6,4 @@
     export let offIcon;
 </script>
 
-<ActionButton small icon={value ? onIcon : offIcon} action={() => {value = !value}} label=""/>
+<ActionButton small noMargin icon={value ? onIcon : offIcon} action={() => {value = !value}} label=""/>

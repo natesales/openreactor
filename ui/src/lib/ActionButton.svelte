@@ -5,6 +5,7 @@
     export let icon = null;
     export let label;
     export let action;
+    export let noMargin = false;
 
     export let danger = false;
     export let wide = false;
@@ -12,13 +13,13 @@
     export let right = false;
 </script>
 
-<main>
-    <button
-            class:danger={danger}
-            class:wide={wide}
-            class:small={small}
-            class:right={right}
-            on:click={() => {
+<button
+        class:danger={danger}
+        class:wide={wide}
+        class:small={small}
+        class:right={right}
+        class:noMargin={noMargin}
+        on:click={() => {
                 if (typeof action === "string") {
                     apiCall(action);
                 } else {
@@ -30,15 +31,13 @@
                 <span class:icon={label}><Icon src={icon} size="24"/></span>
             {/if}{label}
         </span>
-    </button>
-</main>
+</button>
 
 <style>
     button {
         padding: 1em 3em;
         margin-bottom: 1em;
     }
-
 
     button span {
         display: flex;
@@ -47,7 +46,11 @@
     }
 
     button.wide {
-        width: 100%;
+        width: 75%;
+    }
+
+    .noMargin {
+        margin: 0;
     }
 
     button.small {

@@ -1,8 +1,10 @@
 <script>
     import {
-        BoltSlash,
+        ArrowPath,
+        ArrowUturnLeft, ArrowUturnRight,
+        BoltSlash, ChevronRight,
         ExclamationTriangle,
-        Power,
+        Power, Signal, SignalSlash,
         SpeakerWave,
         SpeakerXMark,
         StopCircle,
@@ -32,9 +34,15 @@
     }
 
     let wsConnected;
+    const ws = new WebSocket(wsURL);
+
+    function emit(name) {
+        ws.send(JSON.stringify({
+            name: name
+        }))
+    }
 
     function wsConnect() {
-        const ws = new WebSocket(`ws://${window.location.host}/alert/ws`);
         addLog("Connecting to WebSocket server...");
 
         ws.onopen = () => {
@@ -65,7 +73,7 @@
                     }
                     break;
                 case "fsmStateChange":
-                    if(data["state"]) {
+                    if (data["state"]) {
                         addLog("FSM state changed to " + data["state"]);
                     }
                     refreshStepper();
@@ -83,29 +91,17 @@
     <title>OpenReactor | Mobile Control</title>
 </svelte:head>
 
-<h1>OpenReactor Mobile Control</h1>
-
-<ActionButton danger wide icon={ExclamationTriangle} label="Emergency Stop" action={eStop}/>
+<div class="row">
+    <h1>OpenReactor Mobile Control</h1>
+    <ConnectionChip connected={wsConnected}/>
+</div>
 
 <div class="section">
     <div class="row">
         <IconToggle onIcon={SpeakerXMark} offIcon={SpeakerWave} bind:value={muted}/>
-        <ActionButton icon={ExclamationTriangle} label="FSM Next" action={() => {
-            ws.send(JSON.stringify({
-                name: "fsmNext"
-            }))
-        }}/>
-        <ActionButton icon={ExclamationTriangle} label="Reset" action={() => {
-            ws.send(JSON.stringify({
-                name: "fsmReset"
-            }))
-        }}/>
-        <ActionButton icon={ExclamationTriangle} label="Error" action={() => {
-            ws.send(JSON.stringify({
-                name: "fsmToggleError"
-            }))
-        }}/>
-        <ConnectionChip connected={wsConnected}/>
+        <ActionButton small noMargin icon={ArrowPath} action={() => emit("fsmReset")} label=""/>
+        <ActionButton small noMargin icon={ChevronRight} action={() => emit("fsmNext")} label=""/>
+        <ActionButton danger wide noMargin icon={ExclamationTriangle} label="Emergency Stop" action={eStop}/>
     </div>
 
     <StepperGroup bind:refresh={refreshStepper}/>
@@ -161,5 +157,10 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+    }
+
+    h1 {
+        margin: 0;
+        padding: 0;
     }
 </style>

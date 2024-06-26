@@ -5,12 +5,14 @@
 </script>
 
 <main>
-    <Dot --color="var(--{connected ? 'green' : 'red'})" />
-    <span>{connected ? "Connected" : "Disconnected"}</span>
+    <div>
+        <Dot --color="var(--{connected ? 'green' : 'red'})" />
+        <span>{connected ? "Connected" : "Disconnected"}</span>
+    </div>
 </main>
 
 <style>
-    main {
+    div {
         display: flex;
         align-items: center;
     }
