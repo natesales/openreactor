@@ -1,10 +1,9 @@
 <script>
     import {
         ArrowPath,
-        ArrowUturnLeft, ArrowUturnRight,
         BoltSlash, ChevronRight,
         ExclamationTriangle,
-        Power, Signal, SignalSlash,
+        Power,
         SpeakerWave,
         SpeakerXMark,
         StopCircle,
@@ -29,7 +28,7 @@
 
     function eStop() {
         apiCall("/hv/set?v=0");
-        apiCall("/mfc/set?slpm=0");
+        apiCall("/mfc/set?flowRate=0");
         apiCall("/turbo/off");
     }
 
@@ -121,11 +120,11 @@
     <div class="group">
         <h2>MFC</h2>
         <div>
-            <ActionButton icon={XMark} label="Close" action="/mfc/set?slpm=0"/>
-            <SettableField label="Flow Rate Setpoint" prefix="/mfc/set?slpm="/>
+            <ActionButton icon={XMark} label="Close" action="/mfc/set?flowRate=0"/>
+            <SettableField label="Flow Rate Setpoint" prefix="/mfc/set?flowRate="/>
         </div>
-        <h3>Quick Actions (SLPM)</h3>
-        <ButtonGroup prefix="/mfc/set?slpm=" options={[0.02, 0.05, 0.1, 0.2]}/>
+        <h3>Quick Actions (SCCM)</h3>
+        <ButtonGroup prefix="/mfc/set?flowRate=" options={[0.5, 1, 2, 5, 10]}/>
     </div>
 </div>
 
