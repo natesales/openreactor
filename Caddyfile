@@ -2,8 +2,8 @@
     root * /srv
     file_server browse
 
-    handle_path /gauge/* {
-        reverse_proxy gauge
+    handle_path /mksgauge/* {
+        reverse_proxy mksgauge
     }
     handle_path /turbo/* {
         reverse_proxy turbo

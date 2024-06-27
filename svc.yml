@@ -1,5 +1,5 @@
 ports:
-  mks: /dev/ttyS0
+  mksgauge: /dev/ttyS0
   turbo: /dev/ttyS1
   mfc: /dev/serial/by-id/usb-Keyspan__a_division_of_InnoSys_Inc._Keyspan_USA-19H-if00-port0
   hv: /dev/serial/by-id/usb-Raspberry_Pi_Pico_E660D051132C6F2C-if00
