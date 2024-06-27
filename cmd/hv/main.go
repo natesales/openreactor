@@ -22,7 +22,7 @@ func main() {
 	svc.App.Get("/set", func(ctx *fiber.Ctx) error {
 		v, err := strconv.ParseFloat(ctx.Query("v"), 64)
 		if err != nil {
-			return ctx.SendString(fmt.Sprintf("error parsing slpm URL param: %v", err))
+			return ctx.SendString(fmt.Sprintf("error parsing voltage URL param: %v", err))
 		}
 		if v == 0 {
 			alert.Alert("Disabling HV supply")
