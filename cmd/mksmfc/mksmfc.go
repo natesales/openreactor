@@ -31,7 +31,7 @@ func main() {
 		}
 		log.Infof("Setting flow rate to %f", flowRate)
 
-		resp, err := svc.SerialPort.Send(encode(fmt.Sprintf("s%.2f", flowRate)))
+		resp, err := svc.SerialPort.Send(encode(fmt.Sprintf("s%d", int(flowRate*1000))))
 		if err != nil {
 			return ctx.SendString(fmt.Sprintf("error setting flow rate: %v", err))
 		}
