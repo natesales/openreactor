@@ -8,6 +8,4 @@ vacuum:
     targetVacuumHold: 15s
 cathode:
     tripCurrent: 8
-    delayedTripCurrent: 6
-    delayedTripTime: 1s
     rampCurve: null

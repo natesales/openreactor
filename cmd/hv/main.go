@@ -55,6 +55,19 @@ func main() {
 			return err
 		}
 
+		c, err := svc.SerialPort.Send(encode("c"))
+		if err != nil {
+			return fmt.Errorf("getting currrent: %v", err)
+		}
+		current, err := strconv.ParseFloat(c, 64)
+		if err != nil {
+			return fmt.Errorf("parsing voltage %s: %v", c, err)
+		}
+		log.Debugf("Current: %f", current)
+		if err := db.Write(db.HVCurrent, nil, map[string]any{"mA": current}); err != nil {
+			return err
+		}
+
 		return nil
 	})
 
