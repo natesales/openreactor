@@ -1,9 +1,18 @@
 package fsm
 
+import (
+	"time"
+
+	log "github.com/sirupsen/logrus"
+
+	"github.com/natesales/openreactor/pkg/profile"
+)
+
 type State string
 
 const (
-	Idle                  State = "Idle"                  // Turbo off, HV off, waiting for start command
+	WaitingForProfile     State = "WaitingForProfile"     // Waiting for a profile to be set
+	Ready                 State = "Ready"                 // Profile set, turbo off, HV off, MFC off, waiting for start command
 	TurboSpinup           State = "TurboSpinup"           // Waiting for vacuum to reach target setpoint
 	TurboSpinupHold       State = "TurboSpinupHold"       // Holding at target vacuum setpoint
 	Pumping               State = "Pumping"               // Pumping down to target vacuum level
@@ -16,19 +25,35 @@ const (
 
 	// Error states aren't part of the FSM
 
-	ArcFault    State = "ArcFault"    // Cathode is arcing
 	OverCurrent State = "OverCurrent" // Cathode current trip
 	LowVacuum   State = "LowVacuum"   // Abort due to low vacuum
 )
 
 var (
-	States          = []State{Idle, TurboSpinup, TurboSpinupHold, Pumping, PumpingHold, CathodeRamp, CathodeVoltageReached, GasRegulating, GasRegulatingStable, Shutdown}
+	States = []State{
+		WaitingForProfile, Ready,
+		TurboSpinup, TurboSpinupHold, Pumping, PumpingHold,
+		CathodeRamp, CathodeVoltageReached,
+		GasRegulating, GasRegulatingStable,
+		Shutdown,
+	}
 	ErrorStates     = []State{OverCurrent, LowVacuum}
 	ErrorConditions = map[State]bool{}
 
+	rotorSpinupTimer  *time.Time
+	targetVacuumTimer *time.Time
+
+	prof      *profile.Profile
 	current   = States[0]
 	callbacks []func(State)
 )
+
+// SetProfile sets the profile to use
+func SetProfile(p *profile.Profile) {
+	Reset()
+	prof = p
+	Set(Ready)
+}
 
 // Get returns the current state
 func Get() State {
@@ -37,12 +62,21 @@ func Get() State {
 
 // Set sets the current state
 func Set(s State) {
+	log.Debug("Setting state to ", s)
 	current = s
 	reportChange(current)
 }
 
 // Reset moves the state machine back to the initial state
 func Reset() {
+	// Reset timers
+	rotorSpinupTimer = nil
+	targetVacuumTimer = nil
+
+	// Clear profile
+	prof = nil
+
+	ClearErrors()
 	Set(States[0])
 }
 

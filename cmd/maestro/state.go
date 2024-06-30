@@ -5,8 +5,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/natesales/openreactor/cmd/maestro/fsm"
 	"github.com/natesales/openreactor/cmd/maestro/ws"
+	"github.com/natesales/openreactor/pkg/fsm"
 )
 
 func registerStateHandlers(router fiber.Router) {

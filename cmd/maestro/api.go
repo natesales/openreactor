@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
+	"github.com/natesales/openreactor/pkg/fsm"
 	"github.com/natesales/openreactor/pkg/profile"
 )
 
@@ -31,6 +32,7 @@ func registerAPIHandlers(router fiber.Router) {
 			return response(c, fmt.Errorf("parsing profile: %w", err))
 		}
 
-		return response(c, fmt.Sprintf("Starting profile %s (v%s)", p.Name, p.Revision))
+		fsm.SetProfile(p)
+		return response(c, fmt.Sprintf("Applied profile %s (v%s)", p.Name, p.Revision))
 	})
 }
