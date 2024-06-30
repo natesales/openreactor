@@ -29,10 +29,10 @@ func main() {
 			return err
 		}
 
-		if err := db.Write("turbo_hz", nil, map[string]any{"hz": hz}); err != nil {
+		if err := db.Write(db.TurboSpeed, nil, map[string]any{"hz": hz}); err != nil {
 			return err
 		}
-		if err := db.Write("turbo_current", nil, map[string]any{"current": current}); err != nil {
+		if err := db.Write(db.TurboCurrent, nil, map[string]any{"current": current}); err != nil {
 			return err
 		}
 
@@ -45,7 +45,7 @@ func main() {
 			isRunningInt = 1
 		}
 
-		return db.Write("turbo_running", nil, map[string]any{"running": isRunningInt})
+		return db.Write(db.TurboRunning, nil, map[string]any{"running": isRunningInt})
 	})
 
 	svc.App.Get("/on", func(ctx *fiber.Ctx) error {

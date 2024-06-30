@@ -32,10 +32,10 @@ func main() {
 
 	log.Info("Starting gauge streamer")
 	g.Stream(func(voltage, torr float64) {
-		if err := db.Write("vacuum_torr", nil, map[string]any{"high": torr}); err != nil {
+		if err := db.Write(db.AimGaugeTorr, nil, map[string]any{"high": torr}); err != nil {
 			log.Warn(err)
 		}
-		if err := db.Write("vacuum_volt", nil, map[string]any{"high": voltage}); err != nil {
+		if err := db.Write(db.AimGaugeVolt, nil, map[string]any{"high": voltage}); err != nil {
 			log.Warn(err)
 		}
 	})

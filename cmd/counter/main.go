@@ -38,7 +38,7 @@ func main() {
 			svc.Log.Debugf("%d cps", count)
 
 			last = count
-			if err := db.Write("neutron_cps", nil, map[string]any{"cps": count}); err != nil {
+			if err := db.Write(db.NeutronCPS, nil, map[string]any{"cps": count}); err != nil {
 				svc.Log.Warn(err)
 				continue
 			}

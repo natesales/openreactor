@@ -34,7 +34,7 @@ func main() {
 		if err != nil {
 			return ctx.SendString(fmt.Sprintf("error setting voltage: %v", err))
 		}
-		if err := db.Write("hv_setpoint", nil, map[string]any{"v": v}); err != nil {
+		if err := db.Write(db.HVSetpoint, nil, map[string]any{"v": v}); err != nil {
 			log.Warn(err)
 		}
 		return ctx.SendString(resp)
@@ -51,7 +51,7 @@ func main() {
 		}
 		voltage *= 1000
 		log.Debugf("Voltage: %f", voltage)
-		if err := db.Write("hv_voltage", nil, map[string]any{"v": voltage}); err != nil {
+		if err := db.Write(db.HVVoltage, nil, map[string]any{"v": voltage}); err != nil {
 			return err
 		}
 

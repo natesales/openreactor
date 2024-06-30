@@ -35,7 +35,7 @@ func main() {
 		if err != nil {
 			return ctx.SendString(fmt.Sprintf("error setting flow rate: %v", err))
 		}
-		if err := db.Write("mksmfc_setpoint", nil, map[string]any{"sccm": flowRate}); err != nil {
+		if err := db.Write(db.MKSMFCSetPoint, nil, map[string]any{"sccm": flowRate}); err != nil {
 			log.Warn(err)
 		}
 
@@ -53,7 +53,7 @@ func main() {
 			return fmt.Errorf("parsing flow rate: %v", err)
 		}
 
-		if err := db.Write("mksmfc_flow", nil, map[string]any{"sccm": flowRate}); err != nil {
+		if err := db.Write(db.MKSMFCFlow, nil, map[string]any{"sccm": flowRate}); err != nil {
 			return fmt.Errorf("writing flow rate: %v", err)
 		}
 

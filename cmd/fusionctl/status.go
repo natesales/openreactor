@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-
 	"github.com/spf13/cobra"
 
 	"github.com/natesales/openreactor/pkg/db"
@@ -28,32 +27,28 @@ var statusCmd = &cobra.Command{
 	Use:   "status",
 	Short: "Get system status",
 	Run: func(cmd *cobra.Command, args []string) {
-		printSection("System", m{
-			"Version": "0.1",
-		})
-
 		printSection("HV", m{
-			"Setpoint": withUnits(db.LastOrNil("hv_setpoint"), "v"),
-			"Voltage":  withUnits(db.LastOrNil("hv_voltage"), "v"),
+			"Setpoint": withUnits(db.LastOrNil(db.HVSetpoint), "v"),
+			"Voltage":  withUnits(db.LastOrNil(db.HVVoltage), "v"),
 		})
 
 		printSection("Vacuum", m{
-			"Level": withUnits(db.LastOrNil("mksgauge"), "Torr"),
+			"Level": withUnits(db.LastOrNil(db.MKSGaugeVacuum), "Torr"),
 		})
 
 		printSection("Turbo", m{
-			"Running":       db.LastOrNil("turbo_running") == true,
-			"Rotor Speed":   withUnits(db.LastOrNil("turbo_hz"), "Hz"),
-			"Rotor Current": withUnits(db.LastOrNil("turbo_current"), "A"),
+			"Running":       db.LastOrNil(db.TurboRunning) == true,
+			"Rotor Speed":   withUnits(db.LastOrNil(db.TurboSpeed), "Hz"),
+			"Rotor Current": withUnits(db.LastOrNil(db.TurboCurrent), "A"),
 		})
 
 		printSection("Neutrons", m{
-			"Count": withUnits(db.LastOrNil("neutron_cps"), "c/s"),
+			"Count": withUnits(db.LastOrNil(db.NeutronCPS), "c/s"),
 		})
 
 		printSection("Gas", m{
-			"Setpoint": withUnits(db.LastOrNil("mksmfc_setpoint"), "sccm"),
-			"Flow":     withUnits(db.LastOrNil("mksmfc_flow"), "sccm"),
+			"Setpoint": withUnits(db.LastOrNil(db.MKSMFCSetPoint), "sccm"),
+			"Flow":     withUnits(db.LastOrNil(db.MKSMFCFlow), "sccm"),
 		})
 	},
 }
