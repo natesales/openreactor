@@ -45,9 +45,9 @@ func main() {
 		AllowOrigins: "*", // TODO: remove
 	}))
 
-	registerAlertHandlers(app)
-	registerStateHandlers(app)
-	registerAPIHandlers(app)
+	registerAlertHandlers(app.Group("/alert"))
+	registerStateHandlers(app.Group("/fsm"))
+	registerAPIHandlers(app.Group("/api"))
 
 	log.WithFields(log.Fields{
 		"listenAddr": *listenAddr,

@@ -23,8 +23,8 @@ func response(c *fiber.Ctx, msg any, data ...any) error {
 	})
 }
 
-func registerAPIHandlers(app *fiber.App) {
-	app.Post("/api/profile", func(c *fiber.Ctx) error {
+func registerAPIHandlers(router fiber.Router) {
+	router.Post("/profile", func(c *fiber.Ctx) error {
 		// Validate profile
 		p, err := profile.Parse(c.Body())
 		if err != nil {
