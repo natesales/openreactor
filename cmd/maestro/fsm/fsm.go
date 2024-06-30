@@ -15,6 +15,8 @@ const (
 	Shutdown              State = "Shutdown"              // Turbo off, HV off, waiting for reset back to Idle
 
 	// Error states aren't part of the FSM
+
+	ArcFault    State = "ArcFault"    // Cathode is arcing
 	OverCurrent State = "OverCurrent" // Cathode current trip
 	LowVacuum   State = "LowVacuum"   // Abort due to low vacuum
 )
@@ -73,7 +75,7 @@ func SetError(s State) {
 	reportChange("")
 }
 
-// ClearError clears the error state
+// ClearError clears an error state
 func ClearError(s State) {
 	delete(ErrorConditions, s)
 	reportChange("")
