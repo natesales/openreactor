@@ -64,6 +64,25 @@ var profileLintCmd = &cobra.Command{
 	},
 }
 
+var profileApplyCmd = &cobra.Command{
+	Use:   "apply",
+	Short: "Apply a profile",
+	Run: func(cmd *cobra.Command, args []string) {
+		contents, err := os.Open(file)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		r, err := post("profile", contents)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		r.Display()
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(profileCmd)
 
@@ -75,4 +94,5 @@ func init() {
 
 	profileCmd.AddCommand(profileGenerateCmd)
 	profileCmd.AddCommand(profileLintCmd)
+	profileCmd.AddCommand(profileApplyCmd)
 }

@@ -47,6 +47,7 @@ func main() {
 
 	registerAlertHandlers(app)
 	registerStateHandlers(app)
+	registerAPIHandlers(app)
 
 	log.WithFields(log.Fields{
 		"listenAddr": *listenAddr,
