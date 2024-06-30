@@ -2,6 +2,9 @@
     root * /srv
     file_server browse
 
+    handle_path /aimgauge/* {
+        reverse_proxy aimgauge
+    }
     handle_path /mksgauge/* {
         reverse_proxy mksgauge
     }
@@ -10,6 +13,9 @@
     }
     handle_path /sierramfc/* {
         reverse_proxy sierramfc
+    }
+    handle_path /mksmfc/* {
+        reverse_proxy mksmfc
     }
     handle_path /hv/* {
         reverse_proxy hv
