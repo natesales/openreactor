@@ -1,7 +1,7 @@
 #define INTERRUPT_PIN 15
 
-uint32_t counts = 0;
-uint16_t period = 1000;
+int counts = 0;
+int period = 1000;
 
 void setup() {
   attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), count, FALLING);
@@ -15,7 +15,7 @@ void count() {
 void loop() {
   delay(period);
   detachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN));
-  Serial.println(counts);
+  Serial.printf("%d;", counts);
   counts = 0;
   attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), count, FALLING);
 }
