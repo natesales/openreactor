@@ -42,6 +42,8 @@ var (
 
 	rotorSpinupTimer  *time.Time
 	targetVacuumTimer *time.Time
+	cathodeRampTimer  *time.Time
+	gasRuntimeTimer   *time.Time
 
 	prof      *profile.Profile
 	current   = States[0]

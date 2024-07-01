@@ -2,6 +2,7 @@ package fsm
 
 import (
 	"fmt"
+	"math"
 	"slices"
 	"time"
 
@@ -61,7 +62,9 @@ func Start(loopInterval time.Duration) {
 					Next()
 				}
 			case Ready:
-				// Do nothing, wait for start command
+				if prof.Auto.StartOnApply {
+					Next()
+				} // Else do nothing, wait for start command
 			case TurboSpinup:
 				// Start turbo
 				if err := service.RPC("turbo/on"); err != nil {
@@ -128,16 +131,50 @@ func Start(loopInterval time.Duration) {
 
 				if targetVacuumTimer != nil && time.Since(*targetVacuumTimer) >= prof.Vacuum.TargetVacuumHold {
 					targetVacuumTimer = nil
+					*cathodeRampTimer = time.Now()
 					Set(CathodeRamp)
 				}
 			case CathodeRamp:
-				continue // TODO
+				msec := time.Since(*cathodeRampTimer).Milliseconds()
+				voltage := prof.Cathode.VoltageRampCurve.Eval(float64(msec))
+				if err := service.RPC(fmt.Sprintf("hv/set?v=%f", voltage)); err != nil {
+					log.Warnf("failed to set HV supply: %v", err)
+					continue
+				}
+
+				// Check if voltage setpoint reached
+				if voltage >= prof.Cathode.VoltageCutoff {
+					cathodeRampTimer = nil
+					Set(CathodeVoltageReached)
+				}
 			case CathodeVoltageReached:
-				continue // TODO
+				if prof.Auto.StartGas {
+					Next()
+				} // Else wait for gas start command
 			case GasRegulating:
-				continue // TODO
+				// Set flow rate
+				if err := service.RPC(fmt.Sprintf("mksmfc/set?flowRate=%f", prof.Gas.FlowRate)); err != nil {
+					log.Warnf("failed to set MFC: %v", err)
+					continue
+				}
+
+				// Get MFC flow rate
+				mfcFlowRate, err := db.LastFloat(db.MKSMFCFlow)
+				if err != nil {
+					log.Errorf("Error getting MFC flow rate: %v", err)
+					continue
+				}
+
+				flowErr := math.Abs(mfcFlowRate - prof.Gas.FlowRate)
+				if flowErr <= prof.Gas.FlowSlop {
+					*gasRuntimeTimer = time.Now()
+					Set(GasRegulatingStable)
+				}
 			case GasRegulatingStable:
-				continue // TODO
+				if gasRuntimeTimer != nil && time.Since(*gasRuntimeTimer) >= prof.Gas.Runtime {
+					gasRuntimeTimer = nil
+					Set(Shutdown)
+				} // Else keep gas flowing
 			case Shutdown:
 				if err := service.RPC("hv/set?v=0"); err != nil {
 					log.Warnf("failed to stop HV supply: %v", err)
