@@ -11,7 +11,7 @@ import (
 type State string
 
 const (
-	WaitingForProfile     State = "WaitingForProfile"     // Waiting for a profile to be set
+	ProfileWait           State = "ProfileWait"           // Waiting for a profile to be set
 	Ready                 State = "Ready"                 // Profile set, turbo off, HV off, MFC off, waiting for start command
 	TurboSpinup           State = "TurboSpinup"           // Waiting for vacuum to reach target setpoint
 	TurboSpinupHold       State = "TurboSpinupHold"       // Holding at target vacuum setpoint
@@ -31,7 +31,7 @@ const (
 
 var (
 	States = []State{
-		WaitingForProfile, Ready,
+		ProfileWait, Ready,
 		TurboSpinup, TurboSpinupHold, Pumping, PumpingHold,
 		CathodeRamp, CathodeVoltageReached,
 		GasRegulating, GasRegulatingStable,

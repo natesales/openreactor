@@ -57,7 +57,7 @@ func Start(loopInterval time.Duration) {
 			}
 
 			switch Get() {
-			case WaitingForProfile:
+			case ProfileWait:
 				if prof != nil {
 					Next()
 				}
