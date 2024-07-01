@@ -60,7 +60,7 @@
 
     h3 {
         align-self: flex-start;
-        margin: 16px;
+        margin: 16px 0;
         font-weight: normal;
     }
 </style>

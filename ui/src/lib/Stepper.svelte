@@ -5,7 +5,7 @@
     export let connected = true;
 </script>
 
-<main>
+<main class:connected>
     {#each steps as step, i}
         <div>
             <Dot --color={step.color}/>
@@ -28,6 +28,10 @@
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+    }
+
+    .connected {
+        width: 90%;
     }
 
     div {
