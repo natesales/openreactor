@@ -34,7 +34,7 @@ func main() {
 		if err != nil {
 			return ctx.SendString(fmt.Sprintf("error setting voltage: %v", err))
 		}
-		if err := db.Write("hv_setpoint", nil, map[string]any{"v": v}); err != nil {
+		if err := db.Write(db.HVSetpoint, nil, map[string]any{"v": v}); err != nil {
 			log.Warn(err)
 		}
 		return ctx.SendString(resp)
@@ -51,7 +51,20 @@ func main() {
 		}
 		voltage *= 1000
 		log.Debugf("Voltage: %f", voltage)
-		if err := db.Write("hv_voltage", nil, map[string]any{"v": voltage}); err != nil {
+		if err := db.Write(db.HVVoltage, nil, map[string]any{"v": voltage}); err != nil {
+			return err
+		}
+
+		c, err := svc.SerialPort.Send(encode("c"))
+		if err != nil {
+			return fmt.Errorf("getting currrent: %v", err)
+		}
+		current, err := strconv.ParseFloat(c, 64)
+		if err != nil {
+			return fmt.Errorf("parsing voltage %s: %v", c, err)
+		}
+		log.Debugf("Current: %f", current)
+		if err := db.Write(db.HVCurrent, nil, map[string]any{"mA": current}); err != nil {
 			return err
 		}
 

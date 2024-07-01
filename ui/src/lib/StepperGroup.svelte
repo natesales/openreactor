@@ -7,7 +7,7 @@
     let errors = [];
 
     export function refresh() {
-        fetch(apiURL + "/states")
+        fetch(apiURL + "/fsm/states")
             .then(response => response.json())
             .then(data => {
                 errors = data["errorStates"].map(e => {

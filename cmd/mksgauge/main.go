@@ -67,7 +67,7 @@ func main() {
 		if err != nil {
 			return err
 		}
-		if err := db.Write("mks", nil, map[string]any{
+		if err := db.Write(db.MKSGaugeVacuum, nil, map[string]any{
 			"pirani": pirani,
 			"piezo":  piezo,
 		}); err != nil {

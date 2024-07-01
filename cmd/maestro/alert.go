@@ -8,8 +8,8 @@ import (
 	"github.com/natesales/openreactor/cmd/maestro/ws"
 )
 
-func registerAlertHandlers(app *fiber.App) {
-	app.Use("/ws", func(c *fiber.Ctx) error {
+func registerAlertHandlers(router fiber.Router) {
+	router.Use("/ws", func(c *fiber.Ctx) error {
 		if websocket.IsWebSocketUpgrade(c) {
 			c.Locals("allowed", true)
 			return c.Next()
@@ -17,7 +17,7 @@ func registerAlertHandlers(app *fiber.App) {
 		return fiber.ErrUpgradeRequired
 	})
 
-	app.Get("/ws", websocket.New(func(c *websocket.Conn) {
+	router.Get("/ws", websocket.New(func(c *websocket.Conn) {
 		conns[c] = true
 
 		for {
@@ -33,11 +33,11 @@ func registerAlertHandlers(app *fiber.App) {
 		}
 	}))
 
-	app.Get("/health", func(c *fiber.Ctx) error {
+	router.Get("/health", func(c *fiber.Ctx) error {
 		return c.SendString("alert server ok")
 	})
 
-	app.Post("/log", func(c *fiber.Ctx) error {
+	router.Post("/log", func(c *fiber.Ctx) error {
 		emit(map[string]string{
 			"name":    c.Query("type", "logMessage"), // logMessage | audioAlert
 			"message": c.Query("msg"),

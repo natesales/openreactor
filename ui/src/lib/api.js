@@ -6,5 +6,5 @@ export function apiCall(s) {
 
 export let apiURL = "http://localhost:8084";
 
-// export let wsURL = `ws://${window.location.host}/maestro/ws`;
-export let wsURL = "ws://localhost:8084/ws";
+// export let wsURL = `ws://${window.location.host}/maestro/alert/ws`;
+export let wsURL = "ws://localhost:8084/alert/ws";

@@ -5,11 +5,11 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/natesales/openreactor/cmd/maestro/fsm"
 	"github.com/natesales/openreactor/cmd/maestro/ws"
+	"github.com/natesales/openreactor/pkg/fsm"
 )
 
-func registerStateHandlers(app *fiber.App) {
+func registerStateHandlers(router fiber.Router) {
 	fsm.AddCallback(func(state fsm.State) {
 		emit(fiber.Map{
 			"name":  "fsmStateChange",
@@ -17,7 +17,7 @@ func registerStateHandlers(app *fiber.App) {
 		})
 	})
 
-	app.Get("/states", func(c *fiber.Ctx) error {
+	router.Get("/states", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
 			"active":      fsm.Get(),
 			"states":      fsm.States,
@@ -26,12 +26,12 @@ func registerStateHandlers(app *fiber.App) {
 		})
 	})
 
-	app.Get("/next", func(c *fiber.Ctx) error {
+	router.Get("/next", func(c *fiber.Ctx) error {
 		fsm.Next()
 		return c.JSON(fsm.Get())
 	})
 
-	app.Post("/reset", func(c *fiber.Ctx) error {
+	router.Post("/reset", func(c *fiber.Ctx) error {
 		fsm.Reset()
 		return c.JSON(fsm.Get())
 	})

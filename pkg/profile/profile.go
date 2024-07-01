@@ -25,10 +25,8 @@ type Profile struct {
 	} `yaml:"vacuum"`
 
 	Cathode struct {
-		TripCurrent        float64       `yaml:"tripCurrent" default:"8" description:"Instantaneous trip current (mA)"`
-		DelayedTripCurrent float64       `yaml:"delayedTripCurrent" default:"6" description:"Delayed trip current (mA)"`
-		DelayedTripTime    time.Duration `yaml:"delayedTripTime" default:"1s" description:"Time to hold at delayedTripCurrent before tripping"`
-		RampCurve          line.Line     `yaml:"rampCurve" default:"2x+3" description:"Current ramp curve"`
+		TripCurrent float64   `yaml:"tripCurrent" default:"8" description:"Instantaneous trip current (mA)"`
+		RampCurve   line.Line `yaml:"rampCurve" default:"2x+3" description:"Current ramp curve"`
 	} `yaml:"cathode"`
 }
 

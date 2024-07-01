@@ -3,17 +3,20 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"time"
 
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/natesales/openreactor/pkg/fsm"
 	"github.com/natesales/openreactor/pkg/service"
 )
 
 var (
-	listenAddr = flag.String("l", ":80", "HTTP listen address")
-	verbose    = flag.Bool("v", false, "verbose logging")
+	listenAddr   = flag.String("l", ":80", "HTTP listen address")
+	verbose      = flag.Bool("v", false, "verbose logging")
+	loopInterval = flag.Duration("i", 1*time.Second, "FSM loop interval")
 )
 
 var conns = map[*websocket.Conn]bool{}
@@ -45,9 +48,15 @@ func main() {
 		AllowOrigins: "*", // TODO: remove
 	}))
 
-	registerAlertHandlers(app)
-	registerStateHandlers(app)
+	// Register WS/API handlers
+	registerAlertHandlers(app.Group("/alert"))
+	registerStateHandlers(app.Group("/fsm"))
+	registerAPIHandlers(app.Group("/api"))
 
+	// Start FSM control loop
+	go fsm.Start(*loopInterval)
+
+	// Start WebSocket and API server
 	log.WithFields(log.Fields{
 		"listenAddr": *listenAddr,
 	}).Info("Starting server")

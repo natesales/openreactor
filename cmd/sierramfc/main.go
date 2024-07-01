@@ -45,7 +45,7 @@ func main() {
 			return fmt.Errorf("getting flow rate: %v", err)
 		}
 		log.Debugf("Flow rate: %f", flow)
-		if err := db.Write("sierramfc_flow", nil, map[string]any{"slpm": flow}); err != nil {
+		if err := db.Write(db.SierraMFCFlow, nil, map[string]any{"slpm": flow}); err != nil {
 			return err
 		}
 
@@ -54,7 +54,7 @@ func main() {
 			return fmt.Errorf("getting setpoint: %v", err)
 		}
 		log.Debugf("Setpoint: %f", flow)
-		if err := db.Write("sierramfc_setpoint", nil, map[string]any{"slpm": setPoint}); err != nil {
+		if err := db.Write(db.SierraMFCSetPoint, nil, map[string]any{"slpm": setPoint}); err != nil {
 			return err
 		}
 

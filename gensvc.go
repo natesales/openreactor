@@ -1,11 +1,12 @@
 package main
 
 import (
-	"flag"
 	"os"
 
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
+
+	"github.com/natesales/openreactor/pkg/service"
 )
 
 type Build struct {
@@ -21,17 +22,8 @@ type Container struct {
 }
 
 func main() {
-	svcFilename := flag.String("f", "svc.yml", "Service file")
-	flag.Parse()
-
-	var svc struct {
-		Ports map[string]string `yaml:"ports"`
-	}
-	svcFile, err := os.ReadFile(*svcFilename)
+	svc, err := service.ParseFile()
 	if err != nil {
-		log.Fatal(err)
-	}
-	if err := yaml.Unmarshal(svcFile, &svc); err != nil {
 		log.Fatal(err)
 	}
 
