@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -47,5 +48,7 @@ func main() {
 		} else {
 			buf = append(buf, b[0])
 		}
+
+		fmt.Println(buf)
 	}
 }
