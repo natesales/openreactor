@@ -6,8 +6,6 @@ Open-Source IEC nuclear fusion reactor control, monitoring, and data acquisition
 
 OpenReactor is an open source reference design and control system for a small scale neutron-producing IEC fusor. The control system integrates with Pfeiffer high vacuum [turbo pumps](#vacuum-system), MKS and Edwards [high vacuum gauges](#high-vacuum-gauges), MKS and Sierra [mass flow controllers](#gas-delivery), [high voltage power supplies](#high-voltage-supply), and [proportional neutron counters](#neutron-emission-detection) and NIM instrumentation.
 
-OpenReactor is intended to be a starting place for future research reactor designs. Each hardware subsystem is intentionally designed to be modular and useful on its own, with or without the central reactor control system.
-
 ### Features
 
 - Repeatable "one-click" fusion - OpenReactor runs reusable YAML configuration profiles and monitors power, vacuum, and gas delivery conditions to achieve fusion with no user interaction
@@ -21,6 +19,9 @@ OpenReactor is intended to be a starting place for future research reactor desig
 ### Architecture
 
 TODO
+
+## Hardware
+
 
 ### High Voltage Supply Controller
 
