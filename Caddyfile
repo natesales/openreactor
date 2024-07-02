@@ -2,8 +2,8 @@
     root * /srv
     file_server browse
 
-    handle_path /aimgauge/* {
-        reverse_proxy aimgauge
+    handle_path /edwgauge/* {
+        reverse_proxy edwgauge
     }
     handle_path /mksgauge/* {
         reverse_proxy mksgauge

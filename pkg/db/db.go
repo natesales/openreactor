@@ -37,8 +37,8 @@ var (
 	TurboSpeed   Measurement = "turbo_hz"
 	TurboCurrent Measurement = "turbo_current"
 
-	AimGaugeTorr Measurement = "aim_torr"
-	AimGaugeVolt Measurement = "aim_volt"
+	EdwardsGaugeTorr Measurement = "edwards_torr"
+	EdwardsGaugeVolt Measurement = "edwards_volt"
 
 	MKSGaugeVacuum Measurement = "mksgauge"
 
