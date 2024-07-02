@@ -29,7 +29,7 @@
     function eStop() {
         apiCall("/hv/set?v=0");
         apiCall("/mfc/set?flowRate=0");
-        apiCall("/turbo/off");
+        apiCall("/pfturbo/off");
     }
 
     let wsConnected;
@@ -131,8 +131,8 @@
 <div class="row section">
     <div class="group">
         <h2>Turbo Pump</h2>
-        <ActionButton icon={Power} label="On" action="/turbo/on"/>
-        <ActionButton icon={StopCircle} label="Off" action="/turbo/off"/>
+        <ActionButton icon={Power} label="On" action="/pfturbo/on"/>
+        <ActionButton icon={StopCircle} label="Off" action="/pfturbo/off"/>
     </div>
 </div>
 

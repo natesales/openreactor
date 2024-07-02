@@ -67,7 +67,7 @@ func Start(loopInterval time.Duration) {
 				} // Else do nothing, wait for start command
 			case TurboSpinup:
 				// Start turbo
-				if err := service.RPC("turbo/on"); err != nil {
+				if err := service.RPC("pfturbo/on"); err != nil {
 					log.Warnf("failed to start turbo: %v", err)
 					continue
 				}
@@ -179,7 +179,7 @@ func Start(loopInterval time.Duration) {
 				if err := service.RPC("hv/set?v=0"); err != nil {
 					log.Warnf("failed to stop HV supply: %v", err)
 				}
-				if err := service.RPC("turbo/off"); err != nil {
+				if err := service.RPC("pfturbo/off"); err != nil {
 					log.Warnf("failed to start turbo: %v", err)
 				}
 				if err := service.RPC("mksmfc/set?flowRate=0"); err != nil {

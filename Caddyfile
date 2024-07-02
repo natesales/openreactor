@@ -8,8 +8,8 @@
     handle_path /mksgauge/* {
         reverse_proxy mksgauge
     }
-    handle_path /turbo/* {
-        reverse_proxy turbo
+    handle_path /pfturbo/* {
+        reverse_proxy pfturbo
     }
     handle_path /sierramfc/* {
         reverse_proxy sierramfc
