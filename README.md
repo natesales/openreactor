@@ -6,6 +6,12 @@ Open-Source IEC nuclear fusion reactor control, monitoring, and data acquisition
 
 OpenReactor is an open source reference design and control system for a small scale neutron-producing IEC fusor. The control system integrates with Pfeiffer high vacuum [turbo pumps](#vacuum-system), MKS and Edwards [high vacuum gauges](#high-vacuum-gauges), MKS and Sierra [mass flow controllers](#gas-delivery), [high voltage power supplies](#high-voltage-supply), and [proportional neutron counters](#neutron-emission-detection) and NIM instrumentation.
 
+
+| ![plasma](docs/img/photos/plasma.jpg) | ![plasma](docs/img/photos/lowenergy.jpg) | ![full](docs/img/photos/full.jpg) |
+|:-------------------------------------:|:----------------------------------------:|:---------------------------------:|
+|           Deuterium plasma            |          Low energy plasma test          |         Reactor hardware          |
+
+
 ### Features
 
 - Repeatable "one-click" fusion - OpenReactor runs reusable YAML configuration profiles and monitors power, vacuum, and gas delivery conditions to achieve fusion with no user interaction
@@ -80,7 +86,7 @@ OpenReactor supports the [Pfeiffer Vacuum Protocol](https://mmrc.caltech.edu/Vac
 Many turbo pump controllers have a panel mount RS232 port, but some expose RS232 over their X5 port which is blocked by the turbo pump control cable. In this case, it's trivial to break out the RS232 TX, RX, and ground lines to a small panel mount jack between the X1 and X2 ports.
 
 | ![pump](docs/img/photos/turbo-serial.jpg) | ![pump](docs/img/photos/vacuum.jpg) |
-| :---------------------------------------: | :---------------------------------: |
+|:-----------------------------------------:|:-----------------------------------:|
 | RS232 line added to the TCP control board | RS232 port via back panel connector |
 
 
@@ -109,7 +115,7 @@ We detect neutron emissions using a proportional neutron counter tube, an amplif
 Older Ludlum scalars don't have a RS232 interface like the new ones do, so instead of wiring up a microcontroller to read and control the internal counter's time base and reset state, we can simply expose the pulse signal and trigger an interrupt on a microcontroller. We can wire the counter pulse trigger pin through a voltage divider to get a 3.3V falling-edge PPS trigger signal, and then pass it through a panel mount BNC jack to a RP2040 digital input pin.
 
 |        ![pump](docs/img/photos/ludlum-tap.jpg)         |    ![pump](docs/img/photos/ludlum-bnc.jpg)     |
-| :----------------------------------------------------: | :--------------------------------------------: |
+|:------------------------------------------------------:|:----------------------------------------------:|
 | Tap on the count trigger pin on the 2000 control board | Panel mount BNC connector with voltage divider |
 
 
