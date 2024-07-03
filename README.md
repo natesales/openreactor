@@ -1,15 +1,13 @@
 # OpenReactor
 
-Open-Source IEC nuclear fusion reactor control, monitoring, and data acquisition system
+Open-Source IEC nuclear fusion reactor control, monitoring, and datalogging system
+
+
 
 ### Overview
 
 OpenReactor is an open source reference design and control system for a small scale neutron-producing IEC fusor. The control system integrates with Pfeiffer high vacuum [turbo pumps](#vacuum-system), MKS and Edwards [high vacuum gauges](#high-vacuum-gauges), MKS and Sierra [mass flow controllers](#gas-delivery), [high voltage power supplies](#high-voltage-supply), and [proportional neutron counters](#neutron-emission-detection) and NIM instrumentation.
 
-
-| ![plasma](docs/img/photos/plasma.jpg) | ![plasma](docs/img/photos/lowenergy.jpg) | ![full](docs/img/photos/full.jpg) |
-|:-------------------------------------:|:----------------------------------------:|:---------------------------------:|
-|           Deuterium plasma            |          Low energy plasma test          |         Reactor hardware          |
 
 
 ### Features
@@ -22,9 +20,86 @@ OpenReactor is an open source reference design and control system for a small sc
 - Modular microservice architecture
 - 100% open source
 
+
+
+| ![plasma](docs/img/photos/plasma.jpg) | ![plasma](docs/img/photos/lowenergy.jpg) | ![full](docs/img/photos/full.jpg) |
+|:-------------------------------------:|:----------------------------------------:|:---------------------------------:|
+|           Deuterium plasma            |          Low energy plasma test          |         Reactor hardware          |
+
+
+
 ### Architecture
 
+OpenReactor runs as a collection of microservices that interface with the hardware components of a reactor over RS232 or USB. Each runs in a container and exposes a REST API that's shared between similar hardware, such as different vacuum guages and mass flow controllers. Hardware subsystem microservices share a common [service](https://github.com/natesales/openreactor/tree/main/pkg/service) interface that manages configuration, polling, and data logging in each service.
+
+#### Hardware Subsystems
+
+- [`hv`](https://github.com/natesales/openreactor/tree/main/cmd/hv) - High voltage power supply
+- [`pfturbo`](https://github.com/natesales/openreactor/tree/main/cmd/pfturbo) - Pfeiffer turbo molecular pump controllers 
+- [`edwgauge`](https://github.com/natesales/openreactor/tree/main/cmd/edwgauge) - Edwards high vacuum gauges
+- [`mksgauge`](https://github.com/natesales/openreactor/tree/main/cmd/mksgauge) - MKS high vacuum gauges
+- [`mksmfc`](https://github.com/natesales/openreactor/tree/main/cmd/mksmfc) - MKS mass flow controllers
+- [`sierramfc`](https://github.com/natesales/openreactor/tree/main/cmd/sierramfc) - Sierra mass Flow controllers
+- [`counter`](https://github.com/natesales/openreactor/tree/main/cmd/counter) - Neutron counter
+
+
+
+#### Fusion Profiles
+
+Fusion profiles describe the reactor's operational parameters for a fusion run. They're stored as YAML documents and managed with the  `fusionctl` control program.
+
+
+
+For example, `fusionctl profile generate` creates a new default profile:
+
+```yaml
+name: Default # User specified name
+revision: "0" # User specified revision identifier (symver!)
+auto:
+    startOnApply: false # Start profile on apply
+    startGas: false     # Skip to GasRegulating immediately on CathodeVoltageReached
+vacuum:
+    turboRotorSpeed: 90000
+    turboRotorStartupHold: 15s
+    lowVacuum: 0.01
+    targetVacuum: 1e-05
+    targetVacuumHold: 15s
+cathode:
+    tripCurrent: 8
+    rampCurve: "0" # Voltage ramp curve in slope-intercept form in terms of x (in milliseconds)
+    voltageCutoff: 40
+gas:
+    flowRate: 10
+    flowSlop: 0.1
+    runtime: 1m
+```
+
+
+
+To apply the profile, run `fusionctl profile apply -f 20240701001.yaml`. OpenReactor will start the profile at `TurboSpinup` if `auto.startOnApply` is set, otherwise it'll wait in the `ProfileReady` state for an operator to start the profile from the web UI or with `fusionctl fsm next`.
+
+
+
+#### State Machine
+
+The ["`maestro`"](https://github.com/natesales/openreactor/tree/main/cmd/maestro) service manages the central state machine and operator controls. When running a fusion profile, `maestro` monitors and adjusts reactor parameters such as voltage, vacuum level, and flow rate, to achieve repeatable fusion. It also runs the API and WebSocket server for the web UI and `fusionctl` control program.
+
+![fsm](docs/img/diagrams/fsm.jpg)
+
+`maestro` detects long term over current and low vacuum errors and shuts the high voltage supply down to limit arcing. The high voltage supply controller also monitors current in it's internal control loop and is able to react in miliseconds - much faster than the messaging latency between maestro and the rest of the control system.
+
+#### Remote Control
+
 TODO
+
+| ![ui](docs/img/ui.png) | ![full](docs/img/fusionctl.png) |
+|:-------------------------------:|:-------------------------------:|
+|             Web UI             |           `fusionctl` CLI           |
+
+
+#### Data Logging
+
+![grafana](docs/img/grafana.png)
 
 ## Hardware
 
@@ -35,7 +110,7 @@ The [hv](https://github.com/natesales/openreactor/tree/main/cmd/hv) service cont
 
 ![hv](docs/img/diagrams/hv.jpg)
 
-The power supply case is grounded to the chamber and mains earth throught the AC line side, and a RG8 coax cable supplies the high voltage output to the cathode feedthrough.
+The power supply case is grounded to the chamber and mains earth through the AC line side, and a RG8 coax cable supplies the high voltage output to the cathode feedthrough.
 
 ![hv](docs/img/photos/hv.jpg)
 
@@ -58,8 +133,7 @@ D2O is manually injected into a PEM cell mounted under the mass flow controller 
 
 #### Gas Regulation
 
-The divert valve feeds the mass flow controller, which regulates gas flow from the reservoir syringe and, depending on
-the divert valve position, the PEM cell too.
+The divert valve feeds the mass flow controller, which regulates gas flow from the reservoir syringe and, depending on the divert valve position, the PEM cell too.
 
 OpenReactor supports [MKS](https://github.com/natesales/openreactor/tree/main/cmd/mksmfc) and [Sierra](https://github.com/natesales/openreactor/tree/main/cmd/sierramfc) mass flow controllers. Each shares an identical internal REST API and communicates with the MFC over RS232 (Sierra) or USB to a [RP2040-based control board](https://github.com/natesales/openreactor/blob/main/cmd/mksmfc/mksmfc.ino).
 
@@ -106,13 +180,13 @@ Edwards gauges connect to a RP2040-based gauge controller which controls the gau
 
 ### Neutron Emission Detection
 
-We detect neutron emissions using a proportional neutron counter tube, an amplifier, and a counter running on a RP2040. The [counter](https://github.com/natesales/openreactor/tree/main/cmd/counter) service logs the count rate over serial and supports any falling-edge PPS signal from a NIM rack or scalar.
+We detect neutron emissions using a proportional neutron counter tube, an amplifier, and a counter running on a RP2040. The [counter](https://github.com/natesales/openreactor/tree/main/cmd/counter) service logs the count rate over serial and supports any falling-edge signal from a NIM rack or scalar.
 
 ![neutron](docs/img/diagrams/neutron-detection.jpg)
 
-#### Adding a PPS output to the Ludlum 2000
+#### Adding a pulse output to the Ludlum 2000
 
-Older Ludlum scalars don't have a RS232 interface like the new ones do, so instead of wiring up a microcontroller to read and control the internal counter's time base and reset state, we can simply expose the pulse signal and trigger an interrupt on a microcontroller. We can wire the counter pulse trigger pin through a voltage divider to get a 3.3V falling-edge PPS trigger signal, and then pass it through a panel mount BNC jack to a RP2040 digital input pin.
+Older Ludlum scalars don't have a RS232 interface like the new ones do, so instead of wiring up a microcontroller to read and control the internal counter's time base and reset state, we can simply expose the pulse signal and trigger an interrupt on a microcontroller. We can wire the counter pulse trigger pin through a voltage divider to get a 3.3V falling-edge trigger signal, and then pass it through a panel mount BNC jack to a RP2040 digital input pin.
 
 |        ![pump](docs/img/photos/ludlum-tap.jpg)         |    ![pump](docs/img/photos/ludlum-bnc.jpg)     |
 |:------------------------------------------------------:|:----------------------------------------------:|
