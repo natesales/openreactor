@@ -32,3 +32,6 @@ logs svc:
 ui:
     cd ui && npm run build
     docker compose restart caddy
+
+radiacode:
+    docker build -t radiacode cmd/radiacode

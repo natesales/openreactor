@@ -4,3 +4,4 @@ openreactor
 svc-*
 coprocs/venv
 docker-compose.svc.yml
+cmd/radiacode/venv/
