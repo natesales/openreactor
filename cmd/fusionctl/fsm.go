@@ -24,7 +24,21 @@ var fsmNextCmd = &cobra.Command{
 	},
 }
 
+var fsmResetCmd = &cobra.Command{
+	Use:   "reset",
+	Short: "Reset state machine",
+	Run: func(cmd *cobra.Command, args []string) {
+		r, err := get("fsm/reset")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		r.Display()
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(fsmCmd)
 	fsmCmd.AddCommand(fsmNextCmd)
+	fsmCmd.AddCommand(fsmResetCmd)
 }
