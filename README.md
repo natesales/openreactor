@@ -81,7 +81,7 @@ For example, `fusionctl profile generate` creates a new default profile:
 
 ```yaml
 name: Default # User specified name
-revision: "0" # User specified revision identifier (symver!)
+revision: "0" # User specified revision identifier
 auto:
     startOnApply: false # Start profile on apply
     startGas: false     # Skip to GasRegulating immediately on CathodeVoltageReached
@@ -101,7 +101,7 @@ gas:
     runtime: 1m
 ```
 
-To apply the profile, run `fusionctl profile apply -f 20240701001.yaml`. OpenReactor will start the profile at `TurboSpinup` if `auto.startOnApply` is set, otherwise it'll wait in the `ProfileReady` state for an operator to start the profile from the web UI or with `fusionctl fsm next`.
+To apply the profile, run `fusionctl profile apply -f 20240701001.yaml`. OpenReactor will start the profile at `TurboSpinup` if `auto.startOnApply` is set, otherwise it'll wait in the `ProfileReady` state for an operator to start the profile from the web UI or with `fusionctl fsm next`. Running `fusionctl fsm reset` or clicking the FSM reset button on the web UI sets the FSM back to `ProfileWait` and stops the current profile.
 
 
 
