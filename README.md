@@ -168,6 +168,7 @@ All high vacuum fittings are 1/4" VCR, with a series of reducers to adapt down t
 The high vacuum system consists of a series of pumps and gauges to pull and monitor the high vacuum environment in the chamber.
 
 ![Vacuum System](docs/img/diagrams/vacuum.jpg)
+
 *High vacuum system overview*
 
 #### Turbo Pump Controller
