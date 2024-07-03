@@ -20,16 +20,17 @@ func (l *Linear) Parse(s string) error {
 	s = normalize(s)
 
 	var err error
-	if s == "x" {
+	switch {
+	case s == "x":
 		return l.Parse("1x")
-	} else if s == "-x" {
+	case s == "-x":
 		return l.Parse("-1x")
-	} else if strings.Contains(s, "x-") {
+	case strings.Contains(s, "x-"):
 		_, err = fmt.Sscanf(s, "%fx-%f", &l.m, &l.b)
 		l.b = -l.b
-	} else if strings.Contains(s, "x+") {
+	case strings.Contains(s, "x+"):
 		_, err = fmt.Sscanf(s, "%fx+%f", &l.m, &l.b)
-	} else {
+	default:
 		l.b = 0
 		_, err = fmt.Sscanf(s, "%fx", &l.m)
 	}

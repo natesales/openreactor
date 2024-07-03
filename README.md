@@ -61,7 +61,7 @@ OpenReactor runs as a collection of microservices that interface with the hardwa
 #### Hardware Subsystems
 
 - [`hv`](https://github.com/natesales/openreactor/tree/main/cmd/hv) - High voltage power supply
-- [`pfturbo`](https://github.com/natesales/openreactor/tree/main/cmd/pfturbo) - Pfeiffer turbo molecular pump controllers 
+- [`pfturbo`](https://github.com/natesales/openreactor/tree/main/cmd/pfturbo) - Pfeiffer turbo molecular pump controllers
 - [`edwgauge`](https://github.com/natesales/openreactor/tree/main/cmd/edwgauge) - Edwards high vacuum gauges
 - [`mksgauge`](https://github.com/natesales/openreactor/tree/main/cmd/mksgauge) - MKS high vacuum gauges
 - [`mksmfc`](https://github.com/natesales/openreactor/tree/main/cmd/mksmfc) - MKS mass flow controllers
@@ -72,7 +72,7 @@ OpenReactor runs as a collection of microservices that interface with the hardwa
 
 #### Deployment
 
-The hardware subsystem services, state machine, and Grafana and Caddy, all run in Docker Compose on the reactor control computer. InfluxDB runs on a larger compute cluster to offload query processing. 
+The hardware subsystem services, state machine, and Grafana and Caddy, all run in Docker Compose on the reactor control computer. InfluxDB runs on a larger compute cluster to offload query processing.
 
 
 
@@ -160,7 +160,7 @@ The power supply case is grounded to the chamber and mains earth through the AC 
 
 ### Gas Conversion and Delivery System (GCDS)
 
-The gas delivery conversion and delivery system manages Deuterium production and regulation via electrolysis and flow restriction. 
+The gas delivery conversion and delivery system manages Deuterium production and regulation via electrolysis and flow restriction.
 
 The system has two tasks:
 
@@ -221,7 +221,7 @@ MKS gauges connect to the [mksgauge](https://github.com/natesales/openreactor/tr
 
 ##### Edwards
 
-Edwards gauges connect to a RP2040-based gauge controller which controls the gauge enable state and reports the analog gauge output over USB. The [edwgauge](https://github.com/natesales/openreactor/tree/main/cmd/edwgauge) service converts the analog gauge signal to a vacuum level according to an interpolation profile (currently supports Edwards AIM-S and APG-L). 
+Edwards gauges connect to a RP2040-based gauge controller which controls the gauge enable state and reports the analog gauge output over USB. The [edwgauge](https://github.com/natesales/openreactor/tree/main/cmd/edwgauge) service converts the analog gauge signal to a vacuum level according to an interpolation profile (currently supports Edwards AIM-S and APG-L).
 
 Adding other gauges and gas-dependent curves is as easy as adding a new set of interpolation points to the [YAML config](https://github.com/natesales/openreactor/blob/main/cmd/edwgauge/gauge-lut.yml).
 
@@ -255,4 +255,4 @@ Older Ludlum scalars don't have a RS232 interface like the new ones do, so inste
 
 #### License
 
-OpenReactor is licensed under GPL GNU v3.0. 
+OpenReactor is licensed under GPL GNU v3.0.

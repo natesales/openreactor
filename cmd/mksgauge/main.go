@@ -35,7 +35,7 @@ func exec(cmd string) (string, error) {
 
 	out := string(buf)
 	out = strings.TrimLeft(out, "@253")
-	out = strings.TrimRight(out, ";FF")
+	out = strings.TrimRight(out, ";F")
 
 	return out, nil
 }

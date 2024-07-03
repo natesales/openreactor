@@ -57,7 +57,7 @@ func main() {
 
 		c, err := svc.SerialPort.Send(encode("c"))
 		if err != nil {
-			return fmt.Errorf("getting currrent: %v", err)
+			return fmt.Errorf("getting current: %v", err)
 		}
 		current, err := strconv.ParseFloat(c, 64)
 		if err != nil {
