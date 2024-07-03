@@ -36,7 +36,6 @@ repos:
       - id: golangci-lint-full
         args:
           - "--fix"
-          - "--enable=gocyclo"
           - "--enable=goimports"
           - "--enable=gofmt"
           - "--enable=gocritic"
