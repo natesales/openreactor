@@ -44,10 +44,37 @@ OpenReactor runs as a collection of microservices that interface with the hardwa
 
 
 
+#### Deployment
+
+The hardware subsystem services, state machine, along with Grafana and Caddy, all run in Docker Compose on the reactor control computer. InfluxDB runs on a larger compute cluster to offload query processing. 
+
+
+
+#### State Machine
+
+The central state machine and operator controls run in a service called ["`maestro`"](https://github.com/natesales/openreactor/tree/main/cmd/maestro) . When running a fusion profile, `maestro` monitors and adjusts reactor parameters such as voltage, vacuum level, and flow rate, to achieve repeatable fusion. It also serves the API and WebSocket server for the web UI and `fusionctl` control program.
+
+![fsm](docs/img/diagrams/fsm.jpg)
+
+*FSM Flowchart*
+
+`maestro` detects long term over-current and low vacuum errors and shuts the high voltage supply down to limit arcing. The high voltage supply controller also has an internal current limit that reacts much faster than maestro would be able to.
+
+
+
+#### Remote Control
+
+Reactor operators interact with OpenReactor through a web UI and `kubectl`-inspired CLI. The web UI communicates with `maestro` over WebSockets for reactor state management and manual control over the high voltage, gas delivery, and vacuum systems.
+
+| ![ui](docs/img/ui.png) | ![full](docs/img/fusionctl.png) |
+|:----------------------:|:-------------------------------:|
+|         Web UI         |         `fusionctl` CLI         |
+
+
+
 #### Fusion Profiles
 
 Fusion profiles describe the reactor's operational parameters for a fusion run. They're stored as YAML documents and managed with the  `fusionctl` control program.
-
 
 
 For example, `fusionctl profile generate` creates a new default profile:
@@ -74,33 +101,14 @@ gas:
     runtime: 1m
 ```
 
-
-
 To apply the profile, run `fusionctl profile apply -f 20240701001.yaml`. OpenReactor will start the profile at `TurboSpinup` if `auto.startOnApply` is set, otherwise it'll wait in the `ProfileReady` state for an operator to start the profile from the web UI or with `fusionctl fsm next`.
 
 
 
-#### State Machine
-
-The ["`maestro`"](https://github.com/natesales/openreactor/tree/main/cmd/maestro) (todo: clarify I made this) service manages the central state machine and operator controls. When running a fusion profile, `maestro` monitors and adjusts reactor parameters such as voltage, vacuum level, and flow rate, to achieve repeatable fusion. It also runs the API and WebSocket server for the web UI and `fusionctl` control program.
-
-![fsm](docs/img/diagrams/fsm.jpg)
-
-*FSM Flowchart*
-
-`maestro` detects long term over-current and low vacuum errors and shuts the high voltage supply down to limit arcing. The high voltage supply controller also monitors current in it's internal control loop ;todo; and is able to react in miliseconds - much faster than the messaging latency between maestro and the rest of the control system.
-
-#### Remote Control
-
-TODO
-
-| ![ui](docs/img/ui.png) | ![full](docs/img/fusionctl.png) |
-|:----------------------:|:-------------------------------:|
-|         Web UI         |         `fusionctl` CLI         |
 
 #### Data Logging
 
-Todo
+Each hardware subsystem reports metrics to a central InfluxDB server for visualization in Grafana.
 
 ![grafana](docs/img/grafana.png)
 
