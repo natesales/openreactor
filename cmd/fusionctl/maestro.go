@@ -21,6 +21,15 @@ func (r *response) Display() {
 	}
 }
 
+func parseResponse(resp *http.Response) (*response, error) {
+	var r response
+	if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
+		return nil, err
+	}
+	log.Debugf("Response: %+v", r)
+	return &r, nil
+}
+
 func post(route string, body io.Reader) (*response, error) {
 	resp, err := http.Post(
 		maestroServer+"/api/"+route,
@@ -31,10 +40,14 @@ func post(route string, body io.Reader) (*response, error) {
 		return nil, err
 	}
 
-	var r response
-	if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
+	return parseResponse(resp)
+}
+
+func get(route string) (*response, error) {
+	resp, err := http.Get(maestroServer + "/api/" + route)
+	if err != nil {
 		return nil, err
 	}
-	log.Debugf("Response: %+v", r)
-	return &r, nil
+
+	return parseResponse(resp)
 }
