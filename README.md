@@ -202,7 +202,7 @@ Adding other gauges and gas-dependent curves is as easy as adding a new set of i
 
 ### Neutron Emission Detection
 
-We detect neutron emissions using a proportional neutron counter tube, an amplifier, and a counter running on a RP2040. The [counter](https://github.com/natesales/openreactor/tree/main/cmd/counter) service logs the count rate over serial and supports any falling-edge signal from a NIM rack or scalar. A RadiaCode spectrometer monitors lower energy background radiation over USB.
+We detect neutron emissions using a proportional neutron counter tube, an amplifier, and a counter running on a RP2040. The [counter](https://github.com/natesales/openreactor/tree/main/cmd/counter) service logs the count rate over serial and supports any falling-edge signal from a NIM rack or scalar. A RadiaCode scintillation counter monitors lower energy background radiation over USB.
 
 ![neutron](docs/img/diagrams/neutron-detection.jpg)
 *Neutron detection overview*
