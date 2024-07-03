@@ -41,7 +41,7 @@ OpenReactor is an open source reference design and control system for a small sc
 - [Hardware](#Hardware)
   - [High Voltage Power Supply](#High-Voltage-Supply-Controller)
   - [Gas Conversion and Delivery System (GCDS)](#gas-conversion-and-delivery-system-gcds)
-    - [D<sub>2</sub>O to D<sub>2</sub> Conversion](#dsub2subo-to-dsub2sub-conversion)
+    - [D<sub>2</sub>O to D<sub>2</sub> Conversion](#d2o-to-d2-conversion)
     - [Gas Regulation](#Gas-Regulation)
   - [High Vacuum System](#high-vacuum-system)
     - [Turbo Pump Controller](#turbo-pump-controller)
