@@ -1,6 +1,6 @@
 # OpenReactor
 
-Open-Source IEC nuclear fusion reactor control, monitoring, and datalogging system
+Open-Source IEC nuclear fusion reactor control, monitoring, and data logging system
 
 
 
@@ -22,15 +22,15 @@ OpenReactor is an open source reference design and control system for a small sc
 
 
 
-| ![plasma](docs/img/photos/plasma.jpg) | ![plasma](docs/img/photos/lowenergy.jpg) | ![full](docs/img/photos/full.jpg) |
-|:-------------------------------------:|:----------------------------------------:|:---------------------------------:|
-|           Deuterium plasma            |          Low energy plasma test          |         Reactor hardware          |
+|               ![plasma](docs/img/photos/plasma.jpg)               |                      ![plasma](docs/img/photos/lowenergy.jpg)                      |                     ![full](docs/img/photos/full.jpg)                     |
+|:-----------------------------------------------------------------:|:----------------------------------------------------------------------------------:|:-------------------------------------------------------------------------:|
+| **Deuterium plasma** <br> *(During neutron-producing fusion run)* | **Low-energy plasma test**    <br> *(Poor insulation on high voltage feedthrough)* | **Reactor hardware**   <br> *(Chamber behind lead shield and foil cover)* |
 
 
 
 ### Architecture
 
-OpenReactor runs as a collection of microservices that interface with the hardware components of a reactor over RS232 or USB. Each runs in a container and exposes a REST API that's shared between similar hardware, such as different vacuum guages and mass flow controllers. Hardware subsystem microservices share a common [service](https://github.com/natesales/openreactor/tree/main/pkg/service) interface that manages configuration, polling, and data logging in each service.
+OpenReactor runs as a collection of microservices that interface with the hardware components of a reactor over RS232 or USB. Each runs in a container and exposes a REST API that's shared between similar hardware, such as different vacuum guages and mass flow controllers. Hardware subsystem microservices share a common [service](https://github.com/natesales/openreactor/tree/main/pkg/service) interface that manages configuration, polling, and data logging for each service.
 
 #### Hardware Subsystems
 
@@ -82,54 +82,64 @@ To apply the profile, run `fusionctl profile apply -f 20240701001.yaml`. OpenRea
 
 #### State Machine
 
-The ["`maestro`"](https://github.com/natesales/openreactor/tree/main/cmd/maestro) service manages the central state machine and operator controls. When running a fusion profile, `maestro` monitors and adjusts reactor parameters such as voltage, vacuum level, and flow rate, to achieve repeatable fusion. It also runs the API and WebSocket server for the web UI and `fusionctl` control program.
+The ["`maestro`"](https://github.com/natesales/openreactor/tree/main/cmd/maestro) (todo: clarify I made this) service manages the central state machine and operator controls. When running a fusion profile, `maestro` monitors and adjusts reactor parameters such as voltage, vacuum level, and flow rate, to achieve repeatable fusion. It also runs the API and WebSocket server for the web UI and `fusionctl` control program.
 
 ![fsm](docs/img/diagrams/fsm.jpg)
 
-`maestro` detects long term over current and low vacuum errors and shuts the high voltage supply down to limit arcing. The high voltage supply controller also monitors current in it's internal control loop and is able to react in miliseconds - much faster than the messaging latency between maestro and the rest of the control system.
+*FSM Flowchart*
+
+`maestro` detects long term over-current and low vacuum errors and shuts the high voltage supply down to limit arcing. The high voltage supply controller also monitors current in it's internal control loop ;todo; and is able to react in miliseconds - much faster than the messaging latency between maestro and the rest of the control system.
 
 #### Remote Control
 
 TODO
 
 | ![ui](docs/img/ui.png) | ![full](docs/img/fusionctl.png) |
-|:-------------------------------:|:-------------------------------:|
-|             Web UI             |           `fusionctl` CLI           |
-
+|:----------------------:|:-------------------------------:|
+|         Web UI         |         `fusionctl` CLI         |
 
 #### Data Logging
 
+Todo
+
 ![grafana](docs/img/grafana.png)
+
+
 
 ## Hardware
 
 
 ### High Voltage Supply Controller
 
-The [hv](https://github.com/natesales/openreactor/tree/main/cmd/hv) service controls and monitors a Spellman PTV power supply and communicates communicates with a [RP2040 over serial](https://github.com/natesales/openreactor/blob/main/cmd/hv/hv.ino). The microcontroller features an internal overcurrent shutoff, read from a ballast resistor to absorb momentary arcs during loss of vacuum conditions.
+The [hv](https://github.com/natesales/openreactor/tree/main/cmd/hv) service controls and monitors a Spellman PTV power supply and communicates communicates with a [RP2040 over serial](https://github.com/natesales/openreactor/blob/main/cmd/hv/hv.ino). The microcontroller features an internal over-current shutoff, read from a 250W ballast resistor to sink momentary arc faults.
 
 ![hv](docs/img/diagrams/hv.jpg)
 
-The power supply case is grounded to the chamber and mains earth through the AC line side, and a RG8 coax cable supplies the high voltage output to the cathode feedthrough.
+*HV supply overview*
+
+The power supply case is grounded to the chamber and mains earth through the AC plug, and a RG8 coax cable supplies the high voltage output to the cathode feedthrough.
 
 ![hv](docs/img/photos/hv.jpg)
 
-
+*High voltage power supply and ballast resistor*
 
 ### Gas Conversion and Delivery System (GCDS)
 
-The gas delivery conversion and delivery system manages Deuterium production and regulation via electrolysis and flow restriction. The system has two tasks:
+The gas delivery conversion and delivery system manages Deuterium production and regulation via electrolysis and flow restriction. 
 
-1. Convert Deuterium Oxide (D2O) to Deuterium (D2) gas via electrolysis
+The system has two tasks:
+
+1. Convert Deuterium Oxide (D<sub>2</sub>O) to Deuterium (D<sub>2</sub>) gas via electrolysis
 2. Regulate gas flow into the central vacuum chamber
 
-There are two independent gas supply lines connected to the vacuum chamber. The primary supply line handles gas conversion and closed-loop flow control, while a secondary manual syringe and needle valve allows the chamber to be purged with inert gas or short fusion runs when supplied with D2 gas.
+There are two independent gas supply lines connected to the vacuum chamber. The primary supply line handles gas conversion and closed-loop flow control, while a secondary manual syringe and needle valve allows the chamber to be purged with inert gas or short fusion runs when supplied with D<sub>2</sub> gas.
 
 ![gas](docs/img/diagrams/gas-delivery.jpg)
+*Gas Conversion and Delivery System Overview*
 
-#### D2O to D2 Conversion
+#### D<sub>2</sub>O to D<sub>2</sub> Conversion
 
-D2O is manually injected into a PEM cell mounted under the mass flow controller as needed prior to reactor operation. A 3-way luer lock valve on the PEM cell input supply tube permits a syringe to push any remaining liquid into the PEM cell to conserve D2O. The PEM cell output is connected to a second 3-way luer lock "divert" valve fitted with a reservoir syringe to store D2 gas during or prior to fusion operation. The divert valve enables the gas supply to come directly from the reservoir syringe or both the reservoir syringe and PEM cell for continuous operation.
+D<sub>2</sub>O is manually injected into a PEM cell mounted under the mass flow controller as needed prior to reactor operation. A 3-way luer lock valve on the PEM cell input supply tube permits a syringe to push any remaining liquid into the PEM cell to conserve D<sub>2</sub>O. The PEM cell output is connected to a second 3-way luer lock "divert" valve fitted with a reservoir syringe to store D<sub>2</sub> gas during or prior to fusion operation. The divert valve enables the gas supply to come directly from the reservoir syringe or both the reservoir syringe and PEM cell for continuous operation.
 
 #### Gas Regulation
 
@@ -137,9 +147,9 @@ The divert valve feeds the mass flow controller, which regulates gas flow from t
 
 OpenReactor supports [MKS](https://github.com/natesales/openreactor/tree/main/cmd/mksmfc) and [Sierra](https://github.com/natesales/openreactor/tree/main/cmd/sierramfc) mass flow controllers. Each shares an identical internal REST API and communicates with the MFC over RS232 (Sierra) or USB to a [RP2040-based control board](https://github.com/natesales/openreactor/blob/main/cmd/mksmfc/mksmfc.ino).
 
-|           ![gas](docs/img/photos/gas.jpg)           | ![d2o](docs/img/photos/deuterium.jpg) |
-|:---------------------------------------------------:|:-------------------------------------:|
-| GDCS with MFC, PEM cell, and adapter column visible |     Deuterium Oxide (Heavy Water)     |
+|           ![gas](docs/img/photos/gas.jpg)           | ![Deuterium Oxide](docs/img/photos/deuterium.jpg) |
+|:---------------------------------------------------:|:-------------------------------------------------:|
+| GDCS with MFC, PEM cell, and adapter column visible |           Deuterium Oxide (Heavy Water)           |
 
 All high vacuum fittings are 1/4" VCR, with a series of reducers to adapt down to a luer lock syringe connector.
 
@@ -150,6 +160,7 @@ All high vacuum fittings are 1/4" VCR, with a series of reducers to adapt down t
 The high vacuum system consists of a series of pumps and gauges to pull and monitor the high vacuum environment in the chamber.
 
 ![Vacuum System](docs/img/diagrams/vacuum.jpg)
+*High vacuum system overview*
 
 #### Turbo Pump Controller
 
@@ -166,7 +177,7 @@ Many turbo pump controllers have a panel mount RS232 port, but some expose RS232
 
 #### Vacuum Gauges
 
-OpenReactor supports [MKS](#MKS-Gauges) and [Edwards](#Edwards-Gauges) vacuum gauges for vacuum mesurement from atmospheric to 1e-9 Torr.
+OpenReactor supports [MKS](#MKS) and [Edwards](#Edwards) vacuum gauges for vacuum measurement from atmospheric to 1e-9 Torr.
 
 ##### MKS
 
@@ -174,7 +185,9 @@ MKS gauges connect to the [mksgauge](https://github.com/natesales/openreactor/tr
 
 ##### Edwards
 
-Edwards gauges connect to a RP2040-based gauge controller which controls the gauge enable state and reports the analog gauge output over USB. The [edwgauge](https://github.com/natesales/openreactor/tree/main/cmd/edwgauge) service converts the analog gauge signal to a vacuum level according to an interpolation profile (currently supports Edwards AIM-S and APG-L). Adding other gauges and gas-dependent curves is as easy as adding a new set of interpolation points to the [YAML config](https://github.com/natesales/openreactor/blob/main/cmd/edwgauge/gauge-lut.yml).
+Edwards gauges connect to a RP2040-based gauge controller which controls the gauge enable state and reports the analog gauge output over USB. The [edwgauge](https://github.com/natesales/openreactor/tree/main/cmd/edwgauge) service converts the analog gauge signal to a vacuum level according to an interpolation profile (currently supports Edwards AIM-S and APG-L). 
+
+Adding other gauges and gas-dependent curves is as easy as adding a new set of interpolation points to the [YAML config](https://github.com/natesales/openreactor/blob/main/cmd/edwgauge/gauge-lut.yml).
 
 
 
@@ -183,16 +196,23 @@ Edwards gauges connect to a RP2040-based gauge controller which controls the gau
 We detect neutron emissions using a proportional neutron counter tube, an amplifier, and a counter running on a RP2040. The [counter](https://github.com/natesales/openreactor/tree/main/cmd/counter) service logs the count rate over serial and supports any falling-edge signal from a NIM rack or scalar.
 
 ![neutron](docs/img/diagrams/neutron-detection.jpg)
+*Neutron detection overview*
 
 #### Adding a pulse output to the Ludlum 2000
 
-Older Ludlum scalars don't have a RS232 interface like the new ones do, so instead of wiring up a microcontroller to read and control the internal counter's time base and reset state, we can simply expose the pulse signal and trigger an interrupt on a microcontroller. We can wire the counter pulse trigger pin through a voltage divider to get a 3.3V falling-edge trigger signal, and then pass it through a panel mount BNC jack to a RP2040 digital input pin.
+Older Ludlum scalars don't have a RS232 interface like the new ones do, so instead of wiring up a microcontroller to read and control the internal counter's time base and reset state, we can simply expose the pulse signal and trigger an interrupt on a microcontroller. We can wire the counter pulse trigger pin through a voltage divider to get a 3.3V falling-edge trigger signal, and pass it through a panel mount BNC jack to a RP2040 digital input pin.
 
 |        ![pump](docs/img/photos/ludlum-tap.jpg)         |    ![pump](docs/img/photos/ludlum-bnc.jpg)     |
 |:------------------------------------------------------:|:----------------------------------------------:|
 | Tap on the count trigger pin on the 2000 control board | Panel mount BNC connector with voltage divider |
 
 
-## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+#### Future Work
+TODO
+
+#### Feasibility study
+TODO
+- BOM/cost
+- Scale
+- Environmental feasibility
