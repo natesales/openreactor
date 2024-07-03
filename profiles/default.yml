@@ -1,5 +1,8 @@
 name: Default
 revision: "0"
+auto:
+    startOnApply: false
+    startGas: false
 vacuum:
     turboRotorSpeed: 90000
     turboRotorStartupHold: 15s
@@ -8,4 +11,9 @@ vacuum:
     targetVacuumHold: 15s
 cathode:
     tripCurrent: 8
-    rampCurve: null
+    rampCurve: "0"
+    voltageCutoff: 40
+gas:
+    flowRate: 10
+    flowSlop: 0.1
+    runtime: 1m0s

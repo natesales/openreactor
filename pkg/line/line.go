@@ -33,3 +33,7 @@ func unmarshal(l Line, u func(any) error) error {
 	}
 	return l.Parse(s)
 }
+
+func marshal(l Line) (interface{}, error) {
+	return l.String(), nil
+}

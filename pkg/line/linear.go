@@ -2,12 +2,18 @@ package line
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
 // Linear represents a linear equation in slope intercept form
 type Linear struct {
 	m, b float64
+}
+
+// FromSlopeIntercept creates a new linear equation from a slope and y-intercept
+func FromSlopeIntercept(m, b float64) *Linear {
+	return &Linear{m: m, b: b}
 }
 
 func (l *Linear) Parse(s string) error {
@@ -39,9 +45,21 @@ func (l *Linear) Eval(x float64) float64 {
 }
 
 func (l *Linear) String() string {
-	return fmt.Sprintf("%fx+%f", l.m, l.b)
+	if l.m == 0 && l.b == 0 {
+		return "0"
+	}
+
+	return fmt.Sprintf(
+		"%sx+%s",
+		strconv.FormatFloat(l.m, 'f', -1, 64),
+		strconv.FormatFloat(l.b, 'f', -1, 64),
+	)
 }
 
 func (l *Linear) UnmarshalYAML(u func(any) error) error {
 	return unmarshal(l, u)
+}
+
+func (l *Linear) MarshalYAML() (interface{}, error) {
+	return marshal(l)
 }

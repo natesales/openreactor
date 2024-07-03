@@ -31,7 +31,7 @@ type Profile struct {
 
 	Cathode struct {
 		TripCurrent      float64   `yaml:"tripCurrent" default:"8" description:"Instantaneous trip current (mA)"`
-		VoltageRampCurve line.Line `yaml:"rampCurve" default:"2x+3" description:"Current ramp curve"`
+		VoltageRampCurve line.Line `yaml:"rampCurve" description:"Current ramp curve"`
 		VoltageCutoff    float64   `yaml:"voltageCutoff" default:"40" description:"Voltage cutoff (V)"`
 	} `yaml:"cathode"`
 
@@ -50,6 +50,10 @@ func Parse(b []byte) (*Profile, error) {
 	}
 
 	defaults.SetDefaults(&p)
+	if p.Cathode.VoltageRampCurve == nil {
+		p.Cathode.VoltageRampCurve = line.FromSlopeIntercept(0, 0)
+	}
+
 	if err := validate.Struct(p); err != nil {
 		return nil, err
 	}
