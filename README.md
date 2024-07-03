@@ -28,6 +28,32 @@ OpenReactor is an open source reference design and control system for a small sc
 
 
 
+### Contents
+
+- [Architecture](#Architecture)
+  - [Hardware Subsystems](#Hardware-Subsystems)
+  - [Deployment](#Deployment)
+  - [State Machine](#State-Machine)
+  - [Remote Control](#Remote-Control)
+    - [Fusion Profiles](#Fusion-Profiles)
+    - [`fusionctl`](#fusionctl)
+  - [Data Logging](#Data-Logging)
+- [Hardware](#Hardware)
+  - [High Voltage Power Supply](#High-Voltage-Supply-Controller)
+  - [Gas Conversion and Delivery System (GCDS)](#gas-conversion-and-delivery-system-gcds)
+    - [D<sub>2</sub>O to D<sub>2</sub> Conversion](#dsub2subo-to-dsub2sub-conversion)
+    - [Gas Regulation](#Gas-Regulation)
+  - [High Vacuum System](#high-vacuum-system)
+    - [Turbo Pump Controller](#turbo-pump-controller)
+    - [Vacuum Gauges](#vacuum-gauges)
+      - [MKS](#MKS)
+      - [Edwards](#Edwards)
+  - [Neutron Emission Detection](#neutron-emission-detection)
+    - [Adding a pulse output to scalar](#adding-a-pulse-output-to-the-ludlum-2000)
+  - [Future Work](#future-work)
+
+
+
 ### Architecture
 
 OpenReactor runs as a collection of microservices that interface with the hardware components of a reactor over RS232 or USB. Each runs in a container and exposes a REST API that's shared between similar hardware, such as different vacuum guages and mass flow controllers. Hardware subsystem microservices share a common [service](https://github.com/natesales/openreactor/tree/main/pkg/service) interface that manages configuration, polling, and data logging for each service.
@@ -76,6 +102,7 @@ Reactor operators interact with OpenReactor through a web UI and `kubectl`-inspi
 
 Fusion profiles describe the reactor's operational parameters for a fusion run. They're stored as YAML documents and managed with the  `fusionctl` control program.
 
+#### `fusionctl`
 
 For example, `fusionctl profile generate` creates a new default profile:
 
