@@ -41,12 +41,12 @@ OpenReactor runs as a collection of microservices that interface with the hardwa
 - [`mksmfc`](https://github.com/natesales/openreactor/tree/main/cmd/mksmfc) - MKS mass flow controllers
 - [`sierramfc`](https://github.com/natesales/openreactor/tree/main/cmd/sierramfc) - Sierra mass Flow controllers
 - [`counter`](https://github.com/natesales/openreactor/tree/main/cmd/counter) - Neutron counter
-
+- [`radiacode`](https://github.com/natesales/openreactor/tree/main/cmd/radiacode) - Radiacode scintillation counter
 
 
 #### Deployment
 
-The hardware subsystem services, state machine, along with Grafana and Caddy, all run in Docker Compose on the reactor control computer. InfluxDB runs on a larger compute cluster to offload query processing. 
+The hardware subsystem services, state machine, and Grafana and Caddy, all run in Docker Compose on the reactor control computer. InfluxDB runs on a larger compute cluster to offload query processing. 
 
 
 
@@ -201,7 +201,7 @@ Adding other gauges and gas-dependent curves is as easy as adding a new set of i
 
 ### Neutron Emission Detection
 
-We detect neutron emissions using a proportional neutron counter tube, an amplifier, and a counter running on a RP2040. The [counter](https://github.com/natesales/openreactor/tree/main/cmd/counter) service logs the count rate over serial and supports any falling-edge signal from a NIM rack or scalar.
+We detect neutron emissions using a proportional neutron counter tube, an amplifier, and a counter running on a RP2040. The [counter](https://github.com/natesales/openreactor/tree/main/cmd/counter) service logs the count rate over serial and supports any falling-edge signal from a NIM rack or scalar. A RadiaCode spectrometer monitors lower energy background radiation over USB.
 
 ![neutron](docs/img/diagrams/neutron-detection.jpg)
 *Neutron detection overview*
@@ -217,10 +217,14 @@ Older Ludlum scalars don't have a RS232 interface like the new ones do, so inste
 
 
 #### Future Work
-TODO
+- Plasma conditions
+  - Langmuir probe
+  - Optical spectrometer
+- Neutron activation decay monitoring with RadiaCode
 
-#### Feasibility study
-TODO
-- BOM/cost
-- Scale
-- Environmental feasibility
+
+
+
+#### License
+
+OpenReactor is licensed under GPL GNU v3.0. 
