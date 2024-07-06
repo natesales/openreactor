@@ -5,7 +5,7 @@ go 1.21.1
 require (
 	github.com/go-playground/validator/v10 v10.22.0
 	github.com/gofiber/contrib/websocket v1.3.1
-	github.com/gofiber/fiber/v2 v2.52.4
+	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/influxdata/influxdb-client-go/v2 v2.13.0
 	github.com/mcuadros/go-defaults v1.2.0
 	github.com/sigurn/crc16 v0.0.0-20240131213347-83fcde1e29d1
