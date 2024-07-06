@@ -22,7 +22,7 @@ OpenReactor is an open source reference design and control system for a small sc
 
 
 
-|               ![plasma](docs/img/photos/plasma.jpg)               |                      ![plasma](docs/img/photos/lowenergy.jpg)                      |                     ![full](docs/img/photos/full.jpg)                     |
+|               ![plasma](docs/img/photos/plasma.avif)               |                      ![plasma](docs/img/photos/lowenergy.avif)                      |                     ![full](docs/img/photos/full.avif)                     |
 |:-----------------------------------------------------------------:|:----------------------------------------------------------------------------------:|:-------------------------------------------------------------------------:|
 | **Deuterium plasma** <br> *(During neutron-producing fusion run)* | **Low-energy plasma test**    <br> *(Poor insulation on high voltage feedthrough)* | **Reactor hardware**   <br> *(Chamber behind lead shield and foil cover)* |
 
@@ -80,7 +80,7 @@ The hardware subsystem services, state machine, and Grafana and Caddy, all run i
 
 The central state machine and operator controls run in a service called ["`maestro`"](https://github.com/natesales/openreactor/tree/main/cmd/maestro) . When running a fusion profile, `maestro` monitors and adjusts reactor parameters such as voltage, vacuum level, and flow rate, to achieve repeatable fusion. It also serves the API and WebSocket server for the web UI and `fusionctl` control program.
 
-![fsm](docs/img/diagrams/fsm.jpg)
+![fsm](docs/img/diagrams/fsm.avif)
 
 *FSM Flowchart*
 
@@ -92,9 +92,9 @@ The central state machine and operator controls run in a service called ["`maest
 
 Reactor operators interact with OpenReactor through a web UI and `kubectl`-inspired CLI. The web UI communicates with `maestro` over WebSockets for reactor state management and manual control over the high voltage, gas delivery, and vacuum systems.
 
-| ![ui](docs/img/ui.png) | ![full](docs/img/fusionctl.png) |
-|:----------------------:|:-------------------------------:|
-|         Web UI         |         `fusionctl` CLI         |
+| ![ui](docs/img/ui.webp) | ![full](docs/img/fusionctl.webp) |
+|:-----------------------:|:--------------------------------:|
+|         Web UI          |          `fusionctl` CLI         |
 
 
 
@@ -137,7 +137,7 @@ To apply the profile, run `fusionctl profile apply -f 20240701001.yaml`. OpenRea
 
 Each hardware subsystem reports metrics to a central InfluxDB server for visualization in Grafana.
 
-![grafana](docs/img/grafana.png)
+![grafana](docs/img/grafana.webp)
 
 
 
@@ -148,13 +148,13 @@ Each hardware subsystem reports metrics to a central InfluxDB server for visuali
 
 The [hv](https://github.com/natesales/openreactor/tree/main/cmd/hv) service controls and monitors a Spellman PTV power supply and communicates communicates with a [RP2040 over serial](https://github.com/natesales/openreactor/blob/main/cmd/hv/hv.ino). The microcontroller features an internal over-current shutoff, read from a 250W ballast resistor to sink momentary arc faults.
 
-![hv](docs/img/diagrams/hv.jpg)
+![hv](docs/img/diagrams/hv.avif)
 
 *HV supply overview*
 
 The power supply case is grounded to the chamber and mains earth through the AC plug, and a RG8 coax cable supplies the high voltage output to the cathode feedthrough.
 
-![hv](docs/img/photos/hv.jpg)
+![hv](docs/img/photos/hv.avif)
 
 *High voltage power supply and ballast resistor*
 
@@ -169,7 +169,7 @@ The system has two tasks:
 
 There are two independent gas supply lines connected to the vacuum chamber. The primary supply line handles gas conversion and closed-loop flow control, while a secondary manual syringe and needle valve allows the chamber to be purged with inert gas or short fusion runs when supplied with D<sub>2</sub> gas.
 
-![gas](docs/img/diagrams/gas-delivery.jpg)
+![gas](docs/img/diagrams/gas-delivery.avif)
 *Gas Conversion and Delivery System Overview*
 
 #### D<sub>2</sub>O to D<sub>2</sub> Conversion
@@ -182,7 +182,7 @@ The divert valve feeds the mass flow controller, which regulates gas flow from t
 
 OpenReactor supports [MKS](https://github.com/natesales/openreactor/tree/main/cmd/mksmfc) and [Sierra](https://github.com/natesales/openreactor/tree/main/cmd/sierramfc) mass flow controllers. Each shares an identical internal REST API and communicates with the MFC over RS232 (Sierra) or USB to a [RP2040-based control board](https://github.com/natesales/openreactor/blob/main/cmd/mksmfc/mksmfc.ino).
 
-|           ![gas](docs/img/photos/gas.jpg)           | ![Deuterium Oxide](docs/img/photos/deuterium.jpg) |
+|           ![gas](docs/img/photos/gas.avif)           | ![Deuterium Oxide](docs/img/photos/deuterium.avif) |
 |:---------------------------------------------------:|:-------------------------------------------------:|
 | GDCS with MFC, PEM cell, and adapter column visible |           Deuterium Oxide (Heavy Water)           |
 
@@ -194,7 +194,7 @@ All high vacuum fittings are 1/4" VCR, with a series of reducers to adapt down t
 
 The high vacuum system consists of a series of pumps and gauges to pull and monitor the high vacuum environment in the chamber.
 
-![Vacuum System](docs/img/diagrams/vacuum.jpg)
+![Vacuum System](docs/img/diagrams/vacuum.avif)
 
 *High vacuum system overview*
 
@@ -206,7 +206,7 @@ OpenReactor supports the [Pfeiffer Vacuum Protocol](https://mmrc.caltech.edu/Vac
 
 Many turbo pump controllers have a panel mount RS232 port, but some expose RS232 over their X5 port which is blocked by the turbo pump control cable. In this case, it's trivial to break out the RS232 TX, RX, and ground lines to a small panel mount jack between the X1 and X2 ports.
 
-| ![pump](docs/img/photos/turbo-serial.jpg) | ![pump](docs/img/photos/vacuum.jpg) |
+| ![pump](docs/img/photos/turbo-serial.avif) | ![pump](docs/img/photos/vacuum.avif) |
 |:-----------------------------------------:|:-----------------------------------:|
 | RS232 line added to the TCP control board | RS232 port via back panel connector |
 
@@ -231,14 +231,14 @@ Adding other gauges and gas-dependent curves is as easy as adding a new set of i
 
 We detect neutron emissions using a proportional neutron counter tube, an amplifier, and a counter running on a RP2040. The [counter](https://github.com/natesales/openreactor/tree/main/cmd/counter) service logs the count rate over serial and supports any falling-edge signal from a NIM rack or scalar. A RadiaCode scintillation counter monitors lower energy background radiation over USB.
 
-![neutron](docs/img/diagrams/neutron-detection.jpg)
+![neutron](docs/img/diagrams/neutron-detection.avif)
 *Neutron detection overview*
 
 #### Adding a pulse output to the Ludlum 2000
 
 Older Ludlum scalars don't have a RS232 interface like the new ones do, so instead of wiring up a microcontroller to read and control the internal counter's time base and reset state, we can simply expose the pulse signal and trigger an interrupt on a microcontroller. We can wire the counter pulse trigger pin through a voltage divider to get a 3.3V falling-edge trigger signal, and pass it through a panel mount BNC jack to a RP2040 digital input pin.
 
-|        ![pump](docs/img/photos/ludlum-tap.jpg)         |    ![pump](docs/img/photos/ludlum-bnc.jpg)     |
+|        ![pump](docs/img/photos/ludlum-tap.avif)         |    ![pump](docs/img/photos/ludlum-bnc.avif)     |
 |:------------------------------------------------------:|:----------------------------------------------:|
 | Tap on the count trigger pin on the 2000 control board | Panel mount BNC connector with voltage divider |
 
