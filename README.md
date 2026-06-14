@@ -46,7 +46,7 @@ OpenReactor is an open source reference design and control system for a small sc
 
 ### Architecture
 
-OpenReactor runs as a collection of microservices that interface with the hardware components of a reactor over RS232 or USB. Each runs in a container and exposes a REST API that's shared between similar hardware, such as different vacuum guages and mass flow controllers. Hardware subsystem microservices share a common [service](https://github.com/natesales/openreactor/tree/main/pkg/service) interface that manages configuration, polling, and data logging for each service.
+OpenReactor runs as a collection of microservices that interface with the hardware components of a reactor over RS232 or USB. Each runs in a container and exposes a REST API that's shared between similar hardware, such as different vacuum gauges and mass flow controllers. Hardware subsystem microservices share a common [service](https://github.com/natesales/openreactor/tree/main/pkg/service) interface that manages configuration, polling, and data logging for each service.
 
 #### Hardware Subsystems
 
@@ -123,7 +123,7 @@ Each hardware subsystem reports metrics to a central InfluxDB server for visuali
 
 ### High Voltage Supply Controller
 
-The [hv](https://github.com/natesales/openreactor/tree/main/cmd/hv) service controls and monitors a Spellman PTV power supply and communicates communicates with a [RP2040 over serial](https://github.com/natesales/openreactor/blob/main/cmd/hv/hv.ino). The microcontroller features an internal over-current shutoff, read from a 250W ballast resistor to sink momentary arc faults.
+The [hv](https://github.com/natesales/openreactor/tree/main/cmd/hv) service controls and monitors a Spellman PTV power supply and communicates with a [RP2040 over serial](https://github.com/natesales/openreactor/blob/main/cmd/hv/hv.ino). The microcontroller features an internal over-current shutoff, read from a 250W ballast resistor to sink momentary arc faults.
 
 ![hv](docs/img/diagrams/hv.avif)
 
@@ -175,7 +175,7 @@ The high vacuum system consists of a series of pumps and gauges to pull and moni
 
 #### Turbo Pump Controller
 
-OpenReactor supports the [Pfeiffer Vacuum Protocol](https://mmrc.caltech.edu/Vacuum/Pfeiffer%20Turbo/Pfeiffer%20Interface%20RS@32.pdf) to control an monitor a wide range of Pfeiffer turbo pump controllers and drive units.
+OpenReactor supports the [Pfeiffer Vacuum Protocol](https://mmrc.caltech.edu/Vacuum/Pfeiffer%20Turbo/Pfeiffer%20Interface%20RS@32.pdf) to control and monitor a wide range of Pfeiffer turbo pump controllers and drive units.
 
 ##### Adding a RS232 port to a Pfeiffer turbo pump controller
 
